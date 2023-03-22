@@ -367,35 +367,57 @@ export const StreamCard = styled.View`
 `
 
 export const AdminContent = styled.Text`
+
   font-size: 18px;
+
 `
 
 export const AdminCard = styled.View`
+
   width: 370px;
+
   height: 100px;
+
   border-color: ${secondary};
+
   border: 1px;
+
   margin-left: 20px;
+
   margin-top: 10px;
+
   margin-bottom: 10px;
+
 `
 
 export const AdminContainer = styled.View`
+
   flex: 1;
+
   padding-top: ${StatusBarHeight + 90}px;
+
   background-color: ${primary};
 `
 
 
 export const SBox = styled.View`
+
   width: 340px;
+
   height: 200px;
+
   border-color: ${secondary};
+
   border: 3px;
+
   margin-left: 10px;
+
   margin-top: 15px;
+
   margin-bottom: 10px;
+
   border-radius: 10px;
+
 `
 
 export const SStyledButton = styled.TouchableOpacity`
