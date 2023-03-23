@@ -1,28 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Home } from './src/screen/student/Home';
+import React from 'react'
+import { RootStack } from './src/components/RootStack'
+// import { StudentSubject } from './src/screens/student/StudentSubject'
+// import { StudentNotes } from './src/screens/student/StudentNotes'
+// import { StudentFeedback } from './src/screens/student/StudentFeedback'
+// import { StudentComment } from './src/screens/student/StudentComment'
+// import { StduentAnswerSheetUpload } from './src/screens/student/StduentAnswerSheetUpload'
+// import { AdminStack } from './src/components/AdminStack'
+// // import { AddSubjects } from './src/screens/admin/AddSubjects'
+// import { StudentExamTimeTable } from './src/screens/student/StudentExamTimeTable'
+// import { StudentStack } from './src/components/StudentStack'
 
 export default function App() {
-
-  const Stack = createNativeStackNavigator();
   return (
-    <View style={styles.container}>
-      <Stack.Navigator>
-      <Stack.Screen name="Home" component={Home} />
-    </Stack.Navigator>
-      <Text>Edumate Application Join for develop the new world</Text>
-      <Text>Wellcome to new world</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+    // <Title/>
+    // <Home/>
+    // <StudentStack/>
+    // <StudentSubject/>
+    // <StudentNotes/>
+    // <StudentFeedback/>
+    // <StudentComment/>
+    // <StudentExamTimeTable/>
+    <RootStack /> 
+    // <StduentAnswerSheetUpload/> 
+    // <Upload/>
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+  )}
+
