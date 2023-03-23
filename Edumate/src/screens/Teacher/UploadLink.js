@@ -17,6 +17,7 @@ import { Octicons } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
 
+
 const { brand, darkLight, primary } = colors
 
 export const UploadLink = ({navigation}) => {
@@ -84,11 +85,13 @@ export const UploadLink = ({navigation}) => {
     if (lesson_name == '' || grade == '' || link == '') {
       alert('Please fill the given fields')
     } else {
-      const url = `https://edumate-backend.herokuapp.com/link/add`
-      axios.post(url, data).then((res) => {
-        alert('Link added')
-        navigation.navigate('TeacherDash')
-      })
+      // const url = `https://edumate-backend.herokuapp.com/link/add`
+      // axios.post(url, data).then((res) => {
+      //   alert('Link added')
+      //   navigation.navigate('TeacherDash')
+      // })
+     
+      // dbref.add(data)
     }
   }
 
