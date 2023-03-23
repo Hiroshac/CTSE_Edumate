@@ -21,8 +21,9 @@ import {
   InnerContainer,
   MsgBox,
 } from '../../constants/styles'
-import axios from 'axios'
 import { Picker } from '@react-native-picker/picker'
+import { collection, query, onSnapshot, addDoc } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { darkLight, black } = colors
 
@@ -36,13 +37,21 @@ export default function SignUp({ navigation }) {
   const [password, setPassword] = useState('')
   const [rpassword, setrPassword] = useState('')
   const [subject, setSubject] = useState([])
+  const [user, setUser] = useState([])
 
   const [message, setMessage] = useState()
   const [messageType, setMessageType] = useState()
+  const [userStatus, setStatus] = useState('')
 
   const loadSubject = () => {
-    axios.get('https://edumate-backend.herokuapp.com/stream').then((res) => {
-      setSubject(res.data)
+    const q = query(collection(db, 'stream'))
+    onSnapshot(q, (querySnapshot) => {
+      setSubject(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
     })
   }
 
@@ -57,6 +66,7 @@ export default function SignUp({ navigation }) {
       lastName: lastName,
       type: type,
       stream: stream,
+      dateOfBirth: '-',
       email: email,
       password: password,
     }
@@ -73,21 +83,34 @@ export default function SignUp({ navigation }) {
       if (password !== rpassword) {
         handleMessage('Password Mismatch!!!', 'FAILED')
       } else {
-        await axios
-          .post('https://edumate-backend.herokuapp.com/api/auth/register', data)
-          .then((res) => {
-            const result = res.data
-            if (res.data === 'Created') {
+        const q = query(collection(db, 'user'))
+        onSnapshot(q, (querySnapshot) => {
+          setUser(
+            querySnapshot.docs.map((doc) => ({
+              id: doc.id,
+              data: doc.data(),
+            }))
+          )
+        })
+        user.map((user) => {
+          if (user.data.email == data.email) {
+            setStatus('exist')
+          }
+        })
+        if (userStatus != 'exist') {
+          await addDoc(collection(db, 'user'), {
+            data,
+          })
+            .then((res) => {
               alert('Successfully Registered')
               navigation.navigate('Login')
-            } else if (res.data === 'Exists') {
-              handleMessage('The user already exists', 'FAILED')
-            }
-          })
-          .catch((err) => {
-            console.log(err)
-            handleMessage('An error occured. Please try again!')
-          })
+            })
+            .catch((err) => {
+              handleMessage('An error occured. Please try again!')
+            })
+        } else {
+          handleMessage('The user already exists', 'FAILED')
+        }
       }
     }
   }
@@ -192,9 +215,9 @@ export default function SignUp({ navigation }) {
                     <Picker.Item label='Choose...' />
                     {subject.map((sub) => {
                       return (
-                        <Picker.Item
-                          label={sub.streamname}
-                          value={sub.streamname}
+                        <Picker.Item id={sub.id}
+                          label={sub.data.streamname}
+                          value={sub.data.streamname}
                         />
                       )
                     })}

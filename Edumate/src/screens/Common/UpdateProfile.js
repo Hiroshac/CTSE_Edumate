@@ -15,12 +15,14 @@ import axios from 'axios'
 import { Octicons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
+import { doc, updateDoc, getDoc } from 'firebase/firestore'
+import { db } from '../../../core/config'
 const { darkLight, black, brand } = colors
 
-var userId = ''
-AsyncStorage.getItem('user').then((value) => {
-  userId = value
-})
+var userId = 'x1jVSFpohBPXClIfMyoD'
+// AsyncStorage.getItem('user').then((value) => {
+//   userId = value
+// })
 
 export default function UpdateProfile({ navigation }) {
   const [firstName, setFirstName] = useState('')
@@ -57,17 +59,26 @@ export default function UpdateProfile({ navigation }) {
     loadData()
   }, [])
   const loadData = async () => {
-    await axios
-      .get(`https://edumate-backend.herokuapp.com/api/users/${userId}`)
-      .then((res) => {
-        setFirstName(res.data.firstName)
-        setLastName(res.data.lastName)
-        setEmail(res.data.email)
-        setDob(res.data.dateOfBirth)
-      })
+    // await axios
+    //   .get(`https://edumate-backend.herokuapp.com/api/users/${userId}`)
+    //   .then((res) => {
+    //     setFirstName(res.data.firstName)
+    //     setLastName(res.data.lastName)
+    //     setEmail(res.data.email)
+    //     setDob(res.data.dateOfBirth)
+    //   })
+
+    const q = doc(db, 'user', userId)
+    const docSnap = await getDoc(q)
+    const res = docSnap.data()
+    setFirstName(res.data.firstName)
+    setLastName(res.data.lastName)
+    setEmail(res.data.email)
+    setDob(res.data.dateOfBirth)
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault()
     handleMessage(null)
     if (linkDate == new Date().toLocaleDateString('en-US')) {
       linkDate = dob
@@ -77,19 +88,27 @@ export default function UpdateProfile({ navigation }) {
       lastName: lastName,
       email: email,
       dateOfBirth: linkDate,
+      type: '',
+      stream: '',
+      password: '',
     }
     if (data.firstName == '' || data.lastName == '' || data.email == '') {
       handleMessage('Please fill all the fields', 'FAILED')
     } else {
-      await axios
-        .put(`https://edumate-backend.herokuapp.com/api/users/${userId}`, data)
+      const userDocRef = doc(db, 'user', userId)
+      await updateDoc(userDocRef, {
+        data,
+      })
         .then((res) => {
           alert('Profile successfully updated')
           navigation.navigate('Profile')
         })
         .catch((err) => {
           console.log(err)
-          handleMessage('An error occured. Please try again!')
+          setTimeout(() => {
+            handleMessage('An error occured. Please try again!')
+          }, 3000)
+          handleMessage('')
         })
     }
   }
@@ -131,6 +150,7 @@ export default function UpdateProfile({ navigation }) {
                 placeholderTextColor={darkLight}
                 onChangeText={(email) => setEmail(email)}
                 value={email}
+                editable={false}
               />
             </View>
             <View style={styles.spacing}>

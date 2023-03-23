@@ -4,7 +4,6 @@ import {
   View,
   Image,
   ScrollView,
-  DrawerLayoutAndroid,
   RefreshControl,
 } from 'react-native'
 import React, { useEffect, useState } from 'react'
@@ -18,13 +17,14 @@ import {
   ButtonText,
 } from '../../constants/styles'
 import { StatusBar } from 'expo-status-bar'
-import axios from 'axios'
+import { getDoc, doc, deleteDoc } from 'firebase/firestore'
+import { db } from '../../../core/config'
 const { primary } = colors
 
-var userId = ''
-AsyncStorage.getItem('user').then((value) => {
-  userId = value
-})
+var userId = 'x1jVSFpohBPXClIfMyoD'
+// AsyncStorage.getItem('user').then((value) => {
+//   userId = value
+// })
 
 export default function Profile({ navigation }) {
   const [name, setName] = useState('')
@@ -38,22 +38,21 @@ export default function Profile({ navigation }) {
     loadData()
   }, [])
   const loadData = async () => {
-    await axios
-      .get(`https://edumate-backend.herokuapp.com/api/users/${userId}`)
-      .then((res) => {
-        const name = res.data.firstName + ' ' + res.data.lastName
-        setName(name)
-        setEmail(res.data.email)
-        setDob(res.data.dateOfBirth)
-        setRole(res.data.type)
-        setStream(res.data.stream)
-        setRefreshing(false)
-      })
+    const q = doc(db, 'user', userId)
+    const docSnap = await getDoc(q)
+    const res = docSnap.data()
+    const name = res.data.firstName + ' ' + res.data.lastName
+    setName(name)
+    setEmail(res.data.email)
+    setDob(res.data.dateOfBirth)
+    setRole(res.data.type)
+    setStream(res.data.stream)
+    setRefreshing(false)
   }
 
   const deleteProfile = async () => {
-    await axios
-      .delete(`https://edumate-backend.herokuapp.com/api/users/${userId}`)
+    const userDocRef = doc(db, 'user', userId)
+    await deleteDoc(userDocRef)
       .then(() => {
         alert('Profile Successfully deleted')
         navigation.navigate('Login')

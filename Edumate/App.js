@@ -1,6 +1,8 @@
 import React from 'react'
 import { RootStack } from './src/components/RootStack'
 import { TeacherDash } from './src/screens/Teacher/TeacherDash'
+import { UploadLink } from './src/screens/Teacher/UploadLink'
+import { UploadNote } from './src/screens/Teacher/UploadNote'
 // import { StudentSubject } from './src/screens/student/StudentSubject'
 // import { StudentNotes } from './src/screens/student/StudentNotes'
 // import { StudentFeedback } from './src/screens/student/StudentFeedback'
@@ -21,8 +23,11 @@ export default function App() {
     // <StudentFeedback/>
     // <StudentComment/>
     // <StudentExamTimeTable/>
-    <TeacherDash />
+    <RootStack />
     // <StduentAnswerSheetUpload/>
+    // <UploadLink/>
+    // <UploadNote/>
+    // <TeacherDash/>
     // <Upload/>
   )
 }
