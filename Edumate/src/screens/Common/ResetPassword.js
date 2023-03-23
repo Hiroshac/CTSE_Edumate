@@ -2,7 +2,6 @@ import { Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import {
-  InnerContainer,
   colors,
   StyledTextInputField,
   StyledInputLabel,
@@ -11,11 +10,10 @@ import {
   MsgBox,
 } from '../../constants/styles'
 import ProfileUpper from './ProfileUpper'
-import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 const { darkLight, black } = colors
 
-var userId = 'x1jVSFpohBPXClIfMyoD'
+var userId = 'MdaHUyN5DV2gCB8E3rgB'
 // AsyncStorage.getItem('user').then((value) => {
 //   userId = value
 // })
@@ -59,12 +57,6 @@ export default function ResetPassword({ navigation }) {
         if (res.data.password == data.oldPassword) {
           const userDocRef = doc(db, 'user', userId)
           await updateDoc(userDocRef, {
-            firstName: '',
-            lastName: '',
-            type: '',
-            stream: '',
-            dateOfBirth: '',
-            email: '',
             password: data.newPassword,
           })
             .then((res) => {

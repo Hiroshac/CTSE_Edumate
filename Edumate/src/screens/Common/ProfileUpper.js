@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getDoc, doc } from 'firebase/firestore'
 import { db } from '../../../core/config'
 
-var userId = 'x1jVSFpohBPXClIfMyoD'
+var userId = 'MdaHUyN5DV2gCB8E3rgB'
 // AsyncStorage.getItem('user').then((value) => {
 //   userId = value
 // })
@@ -15,7 +15,6 @@ export default function ProfileUpper() {
   const [name, setName] = useState('')
   const [role, setRole] = useState('')
   const [stream, setStream] = useState('')
-  // const [id, setId] = useState('631790c1cd120dcba06fbf90')
 
   useEffect(() => {
     loadData()
@@ -24,10 +23,10 @@ export default function ProfileUpper() {
     const q = doc(db, 'user', userId)
     const docSnap = await getDoc(q)
     const res = docSnap.data()
-    const name = res.data.firstName + ' ' + res.data.lastName
+    const name = res.firstName + ' ' + res.lastName
     setName(name)
-    setRole(res.data.type)
-    setStream(res.data.stream)
+    setRole(res.type)
+    setStream(res.stream)
   }
   return (
     <>

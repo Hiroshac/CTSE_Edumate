@@ -21,7 +21,7 @@ import { getDoc, doc, deleteDoc } from 'firebase/firestore'
 import { db } from '../../../core/config'
 const { primary } = colors
 
-var userId = 'x1jVSFpohBPXClIfMyoD'
+var userId = 'MdaHUyN5DV2gCB8E3rgB'
 // AsyncStorage.getItem('user').then((value) => {
 //   userId = value
 // })
@@ -41,12 +41,12 @@ export default function Profile({ navigation }) {
     const q = doc(db, 'user', userId)
     const docSnap = await getDoc(q)
     const res = docSnap.data()
-    const name = res.data.firstName + ' ' + res.data.lastName
+    const name = res.firstName + ' ' + res.lastName
     setName(name)
-    setEmail(res.data.email)
-    setDob(res.data.dateOfBirth)
-    setRole(res.data.type)
-    setStream(res.data.stream)
+    setEmail(res.email)
+    setDob(res.dateOfBirth)
+    setRole(res.type)
+    setStream(res.stream)
     setRefreshing(false)
   }
 

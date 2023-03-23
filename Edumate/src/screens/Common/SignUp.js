@@ -99,7 +99,13 @@ export default function SignUp({ navigation }) {
         })
         if (userStatus != 'exist') {
           await addDoc(collection(db, 'user'), {
-            data,
+            firstName: firstName,
+            lastName: lastName,
+            type: type,
+            stream: stream,
+            dateOfBirth: '-',
+            email: email,
+            password: password,
           })
             .then((res) => {
               alert('Successfully Registered')
@@ -215,7 +221,8 @@ export default function SignUp({ navigation }) {
                     <Picker.Item label='Choose...' />
                     {subject.map((sub) => {
                       return (
-                        <Picker.Item id={sub.id}
+                        <Picker.Item
+                          id={sub.id}
                           label={sub.data.streamname}
                           value={sub.data.streamname}
                         />
