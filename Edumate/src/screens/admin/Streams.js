@@ -158,7 +158,7 @@ export const Streams = ({ navigation }) => {
                         <TeacherCardColumn>
                           <TeacherDashContentButton
                             onPress={() => {
-                              navigation.navigate('UpdateStream', { id: e._id })
+                              navigation.navigate('UpdateStream', { id: e.id })
                             }}
                           >
                             <Octicons
