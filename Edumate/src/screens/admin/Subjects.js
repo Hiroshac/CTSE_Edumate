@@ -22,7 +22,8 @@ import {
   drawer,
   colors,
   DrawerBtn,
-  AdminCardRow,
+  TeacherCardColumn,
+  TeacherCardRow,
   AdminContainer,
   StreamCard,
   AdminContent,
@@ -30,7 +31,7 @@ import {
   DrawerIcon,
   AdminCard,
   AdminContentButton,
-  AdminCardColomn,
+  AdminCardRow,
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
@@ -158,11 +159,11 @@ export const Subjects = ({ navigation }) => {
                   <>
                     <AdminCard id={e._id}>
                       <AdminCardRow>
-                        <AdminCardColomn>
+                        <TeacherCardColumn>
                           <AdminContent>Stream : {e.data.streamname}</AdminContent>
                           <AdminContent>Subject : {e.data.subjectname}</AdminContent>
-                        </AdminCardColomn>
-                        <AdminCardColomn>
+                        </TeacherCardColumn>
+                        <TeacherCardColumn>
                           <AdminContentButton
                             onPress={() => {
                               navigation.navigate('UpdateSubject', {
@@ -187,7 +188,7 @@ export const Subjects = ({ navigation }) => {
                               name='trash'
                             />
                           </AdminContentButton>
-                        </AdminCardColomn>
+                        </TeacherCardColumn>
                       </AdminCardRow>
                     </AdminCard>
                   </>

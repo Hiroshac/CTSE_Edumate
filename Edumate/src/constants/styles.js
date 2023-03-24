@@ -374,11 +374,11 @@ export const AdminContent = styled.Text`
 
 export const AdminCard = styled.View`
 
-width: 360px;
+width: 340px;
 height: 200px;
 border-color: ${secondary};
 border: 1px;
-margin-left: 20px;
+// margin-left: 5px;
 margin-top: 10px;
 margin-bottom: 10px;
 
@@ -457,4 +457,33 @@ export const AdminCardRow = styled.View`
 export const AdminCardColomn = styled.View`
   flex-direction: column;
   flex: 1px;
+`
+export const AdminRow = styled.View`
+  flex-direction: row;
+  flex: 1;
+  // margin-top: 5px;
+  justify-content:center;
+`
+export const AdminBox = styled.View`
+  width: 350px;
+  height: 230px;
+  border-color: ${secondary};
+  border: 2px;
+  margin-bottom: 30px;
+  borderRadius: 10px;
+  padding: 20px;
+`
+export const AdminCol = styled.View`
+  flex-direction: column;
+  flex: 1px;
+  padding: 5px;
+`
+export const AdminButton = styled.TouchableOpacity`
+  background-color: ${primary};
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  margin: 5px;
+  height: 40px;
+  width: 100px;
 `

@@ -31,6 +31,9 @@ import {
   AdminContentButton,
   AdminCardRow,
   AdminCardColomn,
+  AdminBox,
+  AdminRow,
+  AdminButton,
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
@@ -154,25 +157,24 @@ export const Exams = (
       <InnerContainer>
         <View>
           <ScrollView
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={loadExams} />
-            }
+            // refreshControl={
+            //   <RefreshControl refreshing={refreshing} onRefresh={loadExams} />
+            // }
           >
             {exams.map((e) => {
               return (
                 <>
-                    <AdminCard id={e._id}>
-                      <AdminCardRow>
-                        <AdminCardColomn>
-                            <AdminContent>Date : {e.data.begin}</AdminContent>
-                            <AdminContent>Start Time : {e.data.begint}</AdminContent>
-                            <AdminContent>End Time : {e.data.endtime}</AdminContent>
-                            <AdminContent>Stream : {e.data.stream}</AdminContent>
-                            <AdminContent>Subject : {e.data.subject}</AdminContent>
-                            <AdminContent>Grade : {e.data.grade}</AdminContent>
-                        </AdminCardColomn>
-                        <AdminCardColomn>
-                        <AdminContentButton
+                    <AdminBox id={e._id}>
+                      <View>
+                            <Text style={{fontSize:18}}>Date : {e.data.begin}</Text>
+                            <Text style={{fontSize:18}}>Start Time : {e.data.begint}</Text>
+                            <Text style={{fontSize:18}}>End Time : {e.data.endtime}</Text>
+                            <Text style={{fontSize:18}}>Stream : {e.data.stream}</Text>
+                            <Text style={{fontSize:18}}>Subject : {e.data.subject}</Text>
+                            <Text style={{fontSize:18}}>Grade : {e.data.grade}</Text>
+                      </View>                   
+                      <AdminRow>
+                        <AdminButton
                             onPress={() => {
                               deleteExam(e.id)
                             }}
@@ -182,8 +184,8 @@ export const Exams = (
                               color={darkLight}
                               name='trash'
                             />
-                          </AdminContentButton>
-                          <AdminContentButton
+                          </AdminButton>
+                          <AdminButton
                             onPress={() => {
                               navigation.navigate('UpdateExam', { id: e.id })
                             }}
@@ -193,10 +195,9 @@ export const Exams = (
                               color={darkLight}
                               name='pencil'
                             />
-                          </AdminContentButton>
-                        </AdminCardColomn>
-                      </AdminCardRow>
-                    </AdminCard>
+                          </AdminButton>
+                        </AdminRow>                                    
+                    </AdminBox>
                 </>
               )
             })}
@@ -214,6 +215,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 18,
     paddingTop: 15,
+  },
+  Text:{
+    fontSize:80
   },
   navigationContainer: {
     backgroundColor: '#ecf0f1',
