@@ -37,7 +37,7 @@ export const RootStack = () => {
             headerBackTitleVisible: false,
           }}
         >
-          <Stack.Screen
+          {/* <Stack.Screen
             name='LoadingPage'
             component={FirstSrn}
             // options={{ navigationBarHidden: true }}
@@ -76,7 +76,7 @@ export const RootStack = () => {
             options={{
               headerShown: false,
             }}
-            />
+            /> */}
             <Stack.Screen
             name='StudentStack'
             component={StudentStack}

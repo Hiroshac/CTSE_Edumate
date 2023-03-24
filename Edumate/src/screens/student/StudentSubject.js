@@ -12,7 +12,8 @@ import {
 export const StudentSubject = ({ navigation, route }) => {
   const getname = route.params;
   const name = getname.name;
-
+  const sid = getname.id;
+  console.log(name);
   return (
     <StyledContainer>
       <StatusBar style="dark" />
@@ -27,7 +28,7 @@ export const StudentSubject = ({ navigation, route }) => {
       </StyledButton>
       <StyledButton
         onPress={() => {
-          navigation.navigate("StudentFeedback",{name:name});
+          navigation.navigate("StudentFeedback",{name:name,id:sid});
         }}
         style={style.btn}
       >
@@ -35,7 +36,7 @@ export const StudentSubject = ({ navigation, route }) => {
       </StyledButton>
       <StyledButton
         onPress={() => {
-          navigation.navigate("AnswerUpload",{name:name});
+          navigation.navigate("AnswerUpload",{name:name,id:sid});
         }}
         style={style.btn}
       >

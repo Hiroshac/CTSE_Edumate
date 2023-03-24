@@ -2,64 +2,53 @@ import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ButtonText,
+  DrawerBtn,
   PageTitle,
   StyledButton,
   StyledContainer,
 } from "../../constants/styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import { RefreshControl, ScrollView,StyleSheet } from "react-native";
+import { collection, getDoc, onSnapshot, query, where } from 'firebase/firestore';
+import { db } from "../../../core/config";
 
-var userId = "636fa108822e88b4ac2ef253";
-AsyncStorage.getItem("user").then((value) => {
-  userId = value;
-});
+export const SSubject = ({ navigation,route }) => {
 
-const wait = (timeout) => {
-  return new Promise((resolve) => setTimeout(resolve, timeout));
-};
-
-export const SSubject = ({ navigation }) => {
+  const getstream = route.params.stream;
+  const getid = route.params.id;
+  // console.log(getstream);
+  // const id = getid.fid
   const [refreshing, setRefreshing] = useState(true)
   const [item, setItem] = useState([]);
   const drawer = useRef(null);
   const [stream, setStream] = useState("");
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    wait(5000).then(() => setRefreshing(false));
-  
-      // loadData();
-  }, []);
 
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
-    await axios
-      .get(`https://edumate-backend.herokuapp.com/api/users/${userId}`)
-      .then(async (res) => {
-        const name = res.data.firstName + " " + res.data.lastName;
-        setRefreshing(false)
-        setStream(res.data.stream);
-        axios
-          .post("https://edumate-backend.herokuapp.com/subject/stream", {
-            streamname: stream,
-          })
-          .then((res) => {
-            setRefreshing(false)
-            setItem(res.data);
-          });
-      });
+    const q = query(
+      collection(db,'subject'),
+      where("streamname","==",getstream)
+    );
+    onSnapshot(q,(snapshot)=>{
+      setItem(snapshot.docs.map(doc=>({
+        id:doc.id,
+        data:doc.data()
+      })))
+    })
+
   };
 
   return (
+
     <StyledContainer>
       <ScrollView
-    refreshControl={
-      <RefreshControl refreshing={refreshing} onRefresh={loadData} />
-    }
+    // refreshControl={
+    //   <RefreshControl refreshing={refreshing} onRefresh={loadData} />
+    // }
       >
       <StatusBar style="dark" />
       <PageTitle style={styles.h}>Subject</PageTitle>
@@ -68,10 +57,10 @@ export const SSubject = ({ navigation }) => {
           <StyledButton
           style={styles.hc}
             onPress={() => {
-              navigation.navigate("Studentsubject", { name: r.subjectname });
+              navigation.navigate("Studentsubject", { name: r.data.subjectname,id:getid });
             }}
           >
-            <ButtonText>{r.subjectname}</ButtonText>
+            <ButtonText>{r.data.subjectname}</ButtonText>
           </StyledButton>
         );
       })}

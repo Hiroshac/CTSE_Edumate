@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Octicons, Ionicons, Fontisto } from "@expo/vector-icons";
+import { Octicons, Ionicons, Fontisto, Entypo, AntDesign, MaterialIcons } from "@expo/vector-icons";
 import {
   ButtonText,
   DrawerBtn,
@@ -11,6 +11,7 @@ import {
   StyledButton,
   StyledContainer,
   colors,
+  RowButton,
 } from "../../constants/styles";
 import {
   Text,
@@ -20,12 +21,15 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../../core/config";
 
 const { brand, darkLight, primary } = colors;
 
-var userId = "636fa108822e88b4ac2ef253";
+var id = "MdaHUyN5DV2gCB8E3rgB";
 AsyncStorage.getItem("user").then((value) => {
   userId = value;
 });
@@ -42,16 +46,12 @@ export const StudentDash = ({ navigation }) => {
     loadData();
   }, []);
   const loadData = async () => {
-    await axios
-      .get(`https://edumate-backend.herokuapp.com/api/users/${userId}`)
-      .then((res) => {
-        const name = res.data.firstName + " " + res.data.lastName;
-        setName(name);
-        setEmail(res.data.email);
-        setDob(res.data.dateOfBirth);
-        setRole(res.data.type);
-        setStream(res.data.stream);
-      });
+    const q = doc(db,'user',id);
+    const docref = await getDoc(q);
+    console.log(docref.data());
+    setName(docref.data().firstName);
+    setEmail(docref.data().email);
+    setStream(docref.data().stream);
   };
 
   const Logout = () => {
@@ -74,7 +74,7 @@ export const StudentDash = ({ navigation }) => {
       </View>
       <DrawerBtn
         onPress={() => {
-          navigation.navigate("User");
+          navigation.navigate("StudentDash");
         }}
       >
         <Text>User Profile</Text>
@@ -114,20 +114,31 @@ export const StudentDash = ({ navigation }) => {
           <Text  style={styles.userl}>Stream</Text>
           <Text  style={styles.userd}>{stream}</Text>
         </SBox>
-        <SStyledButton
+        <RowButton
           onPress={() => {
-            navigation.navigate("SSubject");
+            navigation.navigate("SSubject",{ stream: stream, id:id });
           }}
         >
-          <ButtonText>Subjects</ButtonText>
-        </SStyledButton>
-        <SStyledButton
+          <Entypo name="book" size={24} color="black" />
+          <Text style={{marginLeft:25}}>SUBJECT</Text>
+        </RowButton>
+        <RowButton
           onPress={() => {
-            navigation.navigate("StudentExamTimeTable");
+            navigation.navigate("StudentExamTimeTable",{ stream: "Maths" });
           }}
         >
-          <ButtonText>Exams</ButtonText>
-        </SStyledButton>
+          <AntDesign name="calendar" size={24} color="black" />
+          <Text style={{marginLeft:25}}>EXAMS</Text>
+        </RowButton>
+        <RowButton
+          onPress={() => {
+            navigation.navigate("feedbackdisplay",{id:id});
+          }}
+        >
+          <MaterialIcons name="feedback" size={24} color="black" />
+          <Text style={{marginLeft:25}}>FEEDBACK</Text>
+        </RowButton>
+        
       </StyledContainer>
     </DrawerLayoutAndroid>
   );

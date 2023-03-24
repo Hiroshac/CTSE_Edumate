@@ -49,33 +49,41 @@ import {
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
+import { collection, onSnapshot, query, where } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
 
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
+// const API_URL =
+//   Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
-export const StudentExamTimeTable = () => {
+export const StudentExamTimeTable = ({navigation,route}) => {
 
+  const getstream = route.params.stream;
+  // const get = getstream.stream;
     const [exams, setExams] = useState([])
 
     const [isError, setIsError] = useState(false)
     const [message, setMessage] = useState('')
   
-    const deleteExam = (id) => {
-      axios.delete(`https://edumate-backend.herokuapp.com/examtime/${id}`)
-    }
   
-    const loadExams = async () => {
-      const url = `https://edumate-backend.herokuapp.com/examtime/`
-      await axios.get(url).then((res) => {
-        setExams(res.data)
-      })
-    }
-  
-    useEffect(() => {
-      loadExams()
-    })
+      useEffect(() => {
+        loadData();
+      }, []);
+    
+      const loadData = async () => {
+        const q = query(
+          collection(db,'exam'),
+          where("stream","==",getstream)
+        );
+        onSnapshot(q,(snapshot)=>{
+          setExams(snapshot.docs.map(doc=>({
+            id:doc.id,
+            data:doc.data()
+          })))
+        })
+      };
+    
 
   return (
      <StyledContainer>
@@ -87,26 +95,26 @@ export const StudentExamTimeTable = () => {
             {exams.map((e) => {
               return (
                 <>
-                  <TeacherCard id={e._id}>
+                  <TeacherCard id={e.data.id} style={{padding:15}}>
                     <TeacherCardRow>
                       <TeacherCardColumn>
                         <AdminContent>
-                          Date :  {e.day}
+                          Date :  {e.data.begin}
                         </AdminContent>
                         <AdminContent>
-                          Start Time :  {e.start}
+                          Start Time :  {e.data.begint}
                         </AdminContent>
                         <AdminContent>
-                          End Time :  {e.end}
+                          End Time :  {e.data.endtime}
                         </AdminContent>
                         <AdminContent>
-                          Stream :  {e.stream}
+                          Stream :  {e.data.stream}
                         </AdminContent>
                         <AdminContent>
-                          Subject : {e.subject}
+                          Subject : {e.data.subject}
                         </AdminContent>
                         <AdminContent>
-                          Grade : {e.grade}
+                          Grade : {e.data.grade}
                         </AdminContent>
                       </TeacherCardColumn>
                     </TeacherCardRow>

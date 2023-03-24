@@ -8,6 +8,8 @@ import { StudentDash } from "../screens/student/StudentDash";
 import { StudentNotes } from "../screens/student/StudentNotes";
 import { StudentExamTimeTable } from "../screens/student/StudentExamTimeTable";
 import { SSubject } from "../screens/student/SSubject";
+import { FeedbackDisplay } from "../screens/student/FeedbackDisplay";
+import { FeedbackFeedback } from "../screens/student/FeedbackFeedback";
 
 const Stack = createNativeStackNavigator();
 
@@ -53,6 +55,14 @@ export const StudentStack = () => {
                <Stack.Screen
             name="SSubject"
             component={SSubject}
+          />
+              <Stack.Screen
+            name="feedbackdisplay"
+            component={FeedbackDisplay}
+          />
+             <Stack.Screen
+            name="feedbackupdate"
+            component={FeedbackFeedback}
           />
           {/* <Stack.Screen name="UpdatePassword" component={ResetPassword} /> */}
         </Stack.Navigator>
