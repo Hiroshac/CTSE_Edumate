@@ -18,6 +18,7 @@ import {
   ButtonText,
   StyledTextInput,
   colors,
+  StyledContainer,
 } from '../../constants/styles.js'
 import { Picker } from '@react-native-picker/picker'
 import { StatusBar } from 'expo-status-bar'
@@ -68,36 +69,38 @@ export const AddSubjects = ({navigation}) => {
     }
   
     return (
-      <SafeAreaView style={styles.container}>        
-            <View style={styles.Picker}>
-              <Picker
-                    selectedValue={streamname}
-                    onValueChange={(itemValue, itemIndex) =>
-                    setStreamname(itemValue)
-                    }
-                    >
-                    <Picker.Item label='Choose Stream' />
-                    {streams.map((sub) => {
-                    return (
-                          <Picker.Item
-                            id={sub.id}
-                            label={sub.data.streamname}
-                            value={sub.data.streamname}
-                            />
-                          )
-                          })}
-                  </Picker>
-            </View>
-              <InputCd
-              placeholder='Subject Name'
-              placeholderTextColor={darkLight}
-              value={subjectname}
-              onChangeText={(subjectname) => setSubjectname(subjectname)}
-            />
-          <StyledButton onPress={onChangeHandler}>
-                 <ButtonText>Add</ButtonText>
-        </StyledButton>
-      </SafeAreaView>
+      <StyledContainer>
+      <Text style={styles.text}> Add Subject </Text>
+             <View style={styles.Picker}>
+                <Picker
+                      selectedValue={streamname}
+                      onValueChange={(itemValue, itemIndex) =>
+                      setStreamname(itemValue)
+                      }
+                      >
+                      {streams.map((sub) => {
+                      return (
+                            <Picker.Item
+                              id={sub.id}
+                              label={sub.data.streamname}
+                              value={sub.data.streamname}
+                              />
+                            )
+                            })}
+                    </Picker>
+              </View>
+   
+                <InputCd
+                placeholder='Subject Name'
+                placeholderTextColor={darkLight}
+                onChangeText={(subjectname) => setSubjectname(subjectname)}
+                value={subjectname}
+              />
+      
+        <StyledButton onPress={onChangeHandler}>
+               <ButtonText>Update</ButtonText>
+      </StyledButton>
+    </StyledContainer>
     );
     
 }

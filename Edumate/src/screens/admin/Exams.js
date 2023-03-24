@@ -22,16 +22,15 @@ import {
   drawer,
   colors,
   DrawerBtn,
-  TeacherCardColumn,
-  TeacherDashContentButton,
-  TeacherCardRow,
   AdminContainer,
   StreamCard,
   AdminContent,
   LogoutBtn,
   DrawerIcon,
   AdminCard,
-  TeacherCard,
+  AdminContentButton,
+  AdminCardRow,
+  AdminCardColomn,
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
@@ -163,17 +162,17 @@ export const Exams = (
               return (
                 <>
                     <AdminCard id={e._id}>
-                      <TeacherCardRow>
-                        <TeacherCardColumn>
+                      <AdminCardRow>
+                        <AdminCardColomn>
                             <AdminContent>Date : {e.data.begin}</AdminContent>
                             <AdminContent>Start Time : {e.data.begint}</AdminContent>
                             <AdminContent>End Time : {e.data.endtime}</AdminContent>
                             <AdminContent>Stream : {e.data.stream}</AdminContent>
                             <AdminContent>Subject : {e.data.subject}</AdminContent>
                             <AdminContent>Grade : {e.data.grade}</AdminContent>
-                        </TeacherCardColumn>
-                        <TeacherCardColumn>
-                        <TeacherDashContentButton
+                        </AdminCardColomn>
+                        <AdminCardColomn>
+                        <AdminContentButton
                             onPress={() => {
                               deleteExam(e.id)
                             }}
@@ -183,8 +182,8 @@ export const Exams = (
                               color={darkLight}
                               name='trash'
                             />
-                          </TeacherDashContentButton>
-                          <TeacherDashContentButton
+                          </AdminContentButton>
+                          <AdminContentButton
                             onPress={() => {
                               navigation.navigate('UpdateExam', { id: e.id })
                             }}
@@ -194,9 +193,9 @@ export const Exams = (
                               color={darkLight}
                               name='pencil'
                             />
-                          </TeacherDashContentButton>
-                        </TeacherCardColumn>
-                      </TeacherCardRow>
+                          </AdminContentButton>
+                        </AdminCardColomn>
+                      </AdminCardRow>
                     </AdminCard>
                 </>
               )

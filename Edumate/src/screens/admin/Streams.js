@@ -22,14 +22,14 @@ import {
   drawer,
   colors,
   DrawerBtn,
-  TeacherCardColumn,
-  TeacherDashContentButton,
-  TeacherCardRow,
   AdminContainer,
   StreamCard,
   AdminContent,
   LogoutBtn,
   DrawerIcon,
+  AdminContentButton,
+  AdminCardRow,
+  AdminCardColomn,
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
@@ -151,12 +151,12 @@ export const Streams = ({ navigation }) => {
                 return (
                   <>
                     <StreamCard id={e._id}>
-                      <TeacherCardRow>
-                        <TeacherCardColumn>
+                      <AdminCardRow>
+                        <AdminCardColomn>
                           <AdminContent>{e.data.streamname}</AdminContent>
-                        </TeacherCardColumn>
-                        <TeacherCardColumn>
-                          <TeacherDashContentButton
+                        </AdminCardColomn>
+                        <AdminCardColomn>
+                          <AdminContentButton
                             onPress={() => {
                               navigation.navigate('UpdateStream', { id: e.id })
                             }}
@@ -166,9 +166,9 @@ export const Streams = ({ navigation }) => {
                               color={darkLight}
                               name='pencil'
                             />
-                          </TeacherDashContentButton>
-                        </TeacherCardColumn>
-                      </TeacherCardRow>
+                          </AdminContentButton>
+                        </AdminCardColomn>
+                      </AdminCardRow>
                     </StreamCard>
                   </>
                 )

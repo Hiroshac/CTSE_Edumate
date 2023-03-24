@@ -22,15 +22,15 @@ import {
   drawer,
   colors,
   DrawerBtn,
-  TeacherCardColumn,
-  TeacherDashContentButton,
-  TeacherCardRow,
+  AdminCardRow,
   AdminContainer,
   StreamCard,
   AdminContent,
   LogoutBtn,
   DrawerIcon,
   AdminCard,
+  AdminContentButton,
+  AdminCardColomn,
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
@@ -157,13 +157,13 @@ export const Subjects = ({ navigation }) => {
                 return (
                   <>
                     <AdminCard id={e._id}>
-                      <TeacherCardRow>
-                        <TeacherCardColumn>
+                      <AdminCardRow>
+                        <AdminCardColomn>
                           <AdminContent>Stream : {e.data.streamname}</AdminContent>
                           <AdminContent>Subject : {e.data.subjectname}</AdminContent>
-                        </TeacherCardColumn>
-                        <TeacherCardColumn>
-                          <TeacherDashContentButton
+                        </AdminCardColomn>
+                        <AdminCardColomn>
+                          <AdminContentButton
                             onPress={() => {
                               navigation.navigate('UpdateSubject', {
                                 id: e.id,
@@ -175,8 +175,8 @@ export const Subjects = ({ navigation }) => {
                               color={darkLight}
                               name='pencil'
                             />
-                          </TeacherDashContentButton>
-                          <TeacherDashContentButton
+                          </AdminContentButton>
+                          <AdminContentButton
                             onPress={() => {
                               deleteSubject(e.id)
                             }}
@@ -186,9 +186,9 @@ export const Subjects = ({ navigation }) => {
                               color={darkLight}
                               name='trash'
                             />
-                          </TeacherDashContentButton>
-                        </TeacherCardColumn>
-                      </TeacherCardRow>
+                          </AdminContentButton>
+                        </AdminCardColomn>
+                      </AdminCardRow>
                     </AdminCard>
                   </>
                 )

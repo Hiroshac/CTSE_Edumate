@@ -443,3 +443,18 @@ export const SAStyledButton = styled.TouchableOpacity`
   margin: 5px;
   height: 70px;
   `
+  export const AdminContentButton = styled.TouchableOpacity`
+  margin-left: 150px;
+  margin-top: 20px;
+  font-size: 12px;
+  flex: 1px;
+  right: 50px;
+`
+export const AdminCardRow = styled.View`
+  flex-direction: row;
+  flex: 1px;
+`
+export const AdminCardColomn = styled.View`
+  flex-direction: column;
+  flex: 1px;
+`
