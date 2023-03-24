@@ -42,8 +42,6 @@ import { collection, doc, getDoc, onSnapshot, query, updateDoc } from 'firebase/
 import { db } from '../../../core/config'
 const { brand, darkLight, primary } = colors
 
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
 export const UpdateExam = ({  navigation, route }) => {
 

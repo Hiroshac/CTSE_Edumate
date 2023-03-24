@@ -11,7 +11,6 @@ import {
   SafeAreaView,
   RefreshControl
 } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
