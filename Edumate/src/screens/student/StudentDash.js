@@ -5,10 +5,7 @@ import {
   DrawerBtn,
   DrawerIcon,
   LogoutBtn,
-  PageTitle,
   SBox,
-  SStyledButton,
-  StyledButton,
   StyledContainer,
   colors,
   RowButton,
@@ -23,7 +20,6 @@ import {
 } from "react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../core/config";
 
@@ -38,8 +34,6 @@ export const StudentDash = ({ navigation }) => {
   const drawer = useRef(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [dob, setDob] = useState("");
-  const [role, setRole] = useState("");
   const [stream, setStream] = useState("");
 
   useEffect(() => {
@@ -93,7 +87,6 @@ export const StudentDash = ({ navigation }) => {
       renderNavigationView={navigationView}
     >
         <View>
-          {/* <PageTitle>Edumate</PageTitle> */}
           <DrawerIcon>
             <TouchableOpacity
               title="Open drawer"
@@ -120,7 +113,7 @@ export const StudentDash = ({ navigation }) => {
           }}
         >
           <Entypo name="book" size={24} color="black" />
-          <Text style={{marginLeft:25}}>SUBJECT</Text>
+          <Text style={{marginLeft:25,fontSize:20}}>SUBJECT</Text>
         </RowButton>
         <RowButton
           onPress={() => {
@@ -128,7 +121,7 @@ export const StudentDash = ({ navigation }) => {
           }}
         >
           <AntDesign name="calendar" size={24} color="black" />
-          <Text style={{marginLeft:25}}>EXAMS</Text>
+          <Text style={{marginLeft:25,fontSize:20}}>EXAMS</Text>
         </RowButton>
         <RowButton
           onPress={() => {
@@ -136,7 +129,7 @@ export const StudentDash = ({ navigation }) => {
           }}
         >
           <MaterialIcons name="feedback" size={24} color="black" />
-          <Text style={{marginLeft:25}}>FEEDBACK</Text>
+          <Text style={{marginLeft:25,fontSize:20}}>FEEDBACK</Text>
         </RowButton>
         
       </StyledContainer>

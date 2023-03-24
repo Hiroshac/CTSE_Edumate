@@ -115,7 +115,9 @@ export const StduentAnswerSheetUpload = ({ navigation, route }) => {
       username:username,
       lname:lname,
       grade:grade,
-      url:url
+      url:url,
+      sid:id,
+      status:"notdone"
     });
 
     console.log("Add");

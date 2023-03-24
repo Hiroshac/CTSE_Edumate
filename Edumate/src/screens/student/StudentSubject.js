@@ -2,9 +2,12 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { View, StyleSheet, Text, Button, Pressable } from "react-native";
 import Feedback from "../student/StudentFeedback.js";
+import { Octicons, Ionicons, Fontisto, Entypo, AntDesign, MaterialIcons,FontAwesome5 } from "@expo/vector-icons";
+
 import {
   ButtonText,
   PageTitle,
+  RowButton,
   StyledButton,
   StyledContainer,
 } from "../../constants/styles.js";
@@ -18,37 +21,40 @@ export const StudentSubject = ({ navigation, route }) => {
     <StyledContainer>
       <StatusBar style="dark" />
       <PageTitle style={style.h}>{name}</PageTitle>
-      <StyledButton
+      <RowButton
         style={style.btn}
         onPress={() => {
           navigation.navigate("StudentNotes",{name:name});
         }}
       >
-        <ButtonText>Metarial</ButtonText>
-      </StyledButton>
-      <StyledButton
+          <Entypo name="book" size={24} color="black" />
+        <Text style={{marginLeft:25,fontSize:25}}>Metarial</Text>
+      </RowButton>
+      <RowButton
         onPress={() => {
           navigation.navigate("StudentFeedback",{name:name,id:sid});
         }}
         style={style.btn}
       >
-        <ButtonText>FeedBack</ButtonText>
-      </StyledButton>
-      <StyledButton
+        <AntDesign name="calendar" size={24} color="black" />
+        <Text style={{marginLeft:25,fontSize:25}}>FeedBack</Text>
+      </RowButton>
+      <RowButton
         onPress={() => {
           navigation.navigate("AnswerUpload",{name:name,id:sid});
         }}
         style={style.btn}
       >
-        <ButtonText>Answers</ButtonText>
-      </StyledButton>
+        <FontAwesome5 name="bookmark" size={24} color="black" />
+        <Text style={{marginLeft:25,fontSize:25}}>Answers</Text>
+      </RowButton>
     </StyledContainer>
   );
 };
 
 const style = StyleSheet.create({
   btn: {
-    marginTop: 20,
+    marginTop: 50,
   },
   h:{
     marginBottom:70,
