@@ -4,13 +4,16 @@ import {
   ButtonText,
   DrawerBtn,
   PageTitle,
+  RowButton,
   StyledButton,
   StyledContainer,
 } from "../../constants/styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { RefreshControl, ScrollView,StyleSheet } from "react-native";
+import { RefreshControl, ScrollView,StyleSheet, Text, View } from "react-native";
 import { collection, getDoc, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from "../../../core/config";
+import { Octicons, Ionicons, Fontisto, Entypo, AntDesign, MaterialIcons } from "@expo/vector-icons";
+
 
 export const SSubject = ({ navigation,route }) => {
 
@@ -54,14 +57,17 @@ export const SSubject = ({ navigation,route }) => {
       <PageTitle style={styles.h}>Subject</PageTitle>
       {item.map((r) => {
         return (
-          <StyledButton
-          style={styles.hc}
-            onPress={() => {
-              navigation.navigate("Studentsubject", { name: r.data.subjectname,id:getid });
-            }}
-          >
-            <ButtonText>{r.data.subjectname}</ButtonText>
-          </StyledButton>
+          <View>
+            <Entypo name="book" size={24} color="black" />
+            <RowButton
+            style={styles.hc}
+              onPress={() => {
+                navigation.navigate("Studentsubject", { name: r.data.subjectname,id:getid });
+              }}
+            >
+              <Text style={{fontSize:20}}>{r.data.subjectname}</Text>
+            </RowButton>
+          </View>
         );
       })}
 

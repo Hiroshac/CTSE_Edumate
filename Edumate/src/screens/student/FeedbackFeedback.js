@@ -50,7 +50,7 @@ const onChangeHandler = async() =>{
         onChangeText={(itemcom) => setItemcom(itemcom)}
         />
         <StyledButton onPress={onChangeHandler}>
-          <ButtonText>UPLOAD</ButtonText>
+          <ButtonText>UPDATE</ButtonText>
         </StyledButton>
     </StyledContainer>
   )

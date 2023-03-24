@@ -170,9 +170,11 @@ const styles = StyleSheet.create({
   userl:{
     marginTop:10,
     fontWeight:"bold",
-    marginLeft:10
+    marginLeft:10,
+    fontSize:17
   },
   userd:{
-    marginLeft:40
+    fontSize:17,
+    marginLeft:40,
   }
 });
