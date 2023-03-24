@@ -11,7 +11,6 @@ import {
   SafeAreaView,
   RefreshControl,
 } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -35,11 +34,10 @@ import {
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { DrawerLayoutAndroid, StyleSheet } from 'react-native'
+import { collection, onSnapshot, query } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
-
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -55,12 +53,17 @@ export const Streams = ({ navigation }) => {
   const [message, setMessage] = useState('')
 
   const loadStreams = async () => {
-    const url = `https://edumate-backend.herokuapp.com/stream/`
-    await axios.get(url).then((res) => {
-      setRefreshing(false)
-      setStreams(res.data)
-    })
-  }
+    const q = query(
+    collection(db,'stream'),
+ );
+      onSnapshot(q,(snapshot)=>{
+        setStreams(snapshot.docs.map(doc=>({
+  
+    id:doc.id,
+    data:doc.data()
+  })))
+ })
+ };
 
   useEffect(() => {
     loadStreams()
@@ -150,7 +153,7 @@ export const Streams = ({ navigation }) => {
                     <StreamCard id={e._id}>
                       <TeacherCardRow>
                         <TeacherCardColumn>
-                          <AdminContent>{e.streamname}</AdminContent>
+                          <AdminContent>{e.data.streamname}</AdminContent>
                         </TeacherCardColumn>
                         <TeacherCardColumn>
                           <TeacherDashContentButton

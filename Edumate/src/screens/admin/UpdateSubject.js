@@ -38,6 +38,8 @@ import {
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
 
@@ -52,28 +54,29 @@ export const UpdateSubject = ({ route, navigation }) => {
   const [message, setMessage] = useState('')
   const  id  = route.params.id
 
-  useEffect(()=>{
-    const url = `https://edumate-backend.herokuapp.com/subject/get/${id}`
-    axios.get(url).then((res) => {
-      setStreamname(res.data.streamname)
-      setSubjectname(res.data.subjectname )
-    })
-  },[])
+    
+    const loadData = async () => {
+      const q = doc(db,'subject',id);
+      const docref = await getDoc(q);
+      console.log(docref.data());
+      setStreamname(docref.data().streamname);
+      setSubjectname(docref.data().subjectname); 
+  };
 
-  const data = {
-    streamname,
-    subjectname,
-  }
-
-  const onChangeHandler = (e) => {
-    e.preventDefault()
-    const url = `https://edumate-backend.herokuapp.com/subject/${id}`
-    console.log(data);
-    axios.put(url, data).then((res) => {
-      alert('updated');
+  const onChangeHandler = async() =>{
+          const ref = doc(db,'subject',id);
+          await updateDoc(ref,{
+           streamname:streamname,
+           subjectname:subjectname
+        });
       navigation.navigate("getsubjects")
-    })
-  }
+    
+    }
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
 
   return (
     <StyledContainer>

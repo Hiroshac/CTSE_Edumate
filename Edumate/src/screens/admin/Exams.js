@@ -37,6 +37,8 @@ import {
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { DrawerLayoutAndroid, StyleSheet } from 'react-native'
+import { collection, deleteDoc, doc, onSnapshot, query } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
 
@@ -56,22 +58,31 @@ export const Exams = (
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState('')
 
-  const deleteExam = (id) => {
-    axios.delete(`https://edumate-backend.herokuapp.com/examtime/${id}`)
-    alert('Successfully deleted');
-  }
 
   const loadExams = async () => {
-    const url = `https://edumate-backend.herokuapp.com/examtime/`
-    await axios.get(url).then((res) => {
-      setRefreshing(false)
-      setExams(res.data)
-    })
+    const q = query(
+    collection(db,'exam'),
+ );
+      onSnapshot(q,(snapshot)=>{
+        setExams(snapshot.docs.map(doc=>({
+  
+    id:doc.id,
+    data:doc.data()
+  })))
+ })
+ };
+
+ const deleteExam = async (id) => {
+  try {
+    await deleteDoc(doc(db, 'exam', id));
+  } catch (error) {
+    console.error('Error deleting exam: ', error);
   }
+};
 
   useEffect(() => {
     loadExams()
-  })
+  },[])
 
   const getMessage = () => {
     const status = isError ? `Error: ` : `Success: `
@@ -155,46 +166,42 @@ export const Exams = (
             {exams.map((e) => {
               return (
                 <>
-                  <TeacherCard id={e._id}>
-                    <TeacherCardRow>
-                      <TeacherCardColumn>
-                        <AdminContent>
-                          Date :    {e.day}
-                        </AdminContent>
-                        <AdminContent>
-                          Start Time :    {e.start}
-                        </AdminContent>
-                        <AdminContent>
-                          End Time :    {e.end}
-                        </AdminContent>
-                        <AdminContent>
-                          Stream :    {e.stream}
-                        </AdminContent>
-                        <AdminContent>
-                          Subject :   {e.subject}
-                        </AdminContent>
-                        <AdminContent>
-                          Grade :   {e.grade}
-                        </AdminContent>
-                      </TeacherCardColumn>
-                      <TeacherCardColumn>
+                    <AdminCard id={e._id}>
+                      <TeacherCardRow>
+                        <TeacherCardColumn>
+                            <AdminContent>Date : {e.data.begin}</AdminContent>
+                            <AdminContent>Start Time : {e.data.begint}</AdminContent>
+                            <AdminContent>End Time : {e.data.endtime}</AdminContent>
+                            <AdminContent>Stream : {e.data.stream}</AdminContent>
+                            <AdminContent>Subject : {e.data.subject}</AdminContent>
+                            <AdminContent>Grade : {e.data.grade}</AdminContent>
+                        </TeacherCardColumn>
+                        <TeacherCardColumn>
                         <TeacherDashContentButton
-                          onPress={() => {
-                            navigation.navigate('UpdateExam',{id:e._id})
-                          }}
-                        >
-                          <Octicons size={20} color={darkLight} name='pencil' />
-                        </TeacherDashContentButton>
-                        <TeacherDashContentButton
-                          onPress={() => {
-                            deleteExam(e._id)
-                          }}
-                        >
-                          <Octicons size={20} color={darkLight} name='trash' />
-                        </TeacherDashContentButton>                
-                      </TeacherCardColumn>
-                    </TeacherCardRow>
-                  </TeacherCard>
+                            onPress={() => {
+                              deleteExam(e.id)
+                            }}
+                          >
+                            <Octicons
+                              size={20}
+                              color={darkLight}
+                              name='trash'
+                            />
+                          </TeacherDashContentButton>
+                          <TeacherDashContentButton
+                            onPress={() => {
+                              navigation.navigate('UpdateExam', { id: e.id })
+                            }}
+                          >
+                            <Octicons
+                              size={20}
+                              color={darkLight}
+                              name='pencil'
+                            />
+                          </TeacherDashContentButton>
+                        </TeacherCardColumn>
+                      </TeacherCardRow>
+                    </AdminCard>
                 </>
               )
             })}

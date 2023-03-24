@@ -8,7 +8,6 @@ import {
   TextInput,
   Platform,
 } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -39,8 +38,8 @@ import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
-
-
+import { collection, doc, getDoc, onSnapshot, query, updateDoc } from 'firebase/firestore';
+import { db } from '../../../core/config'
 const { brand, darkLight, primary } = colors
 
 const API_URL =
@@ -48,40 +47,77 @@ const API_URL =
 
 export const UpdateExam = ({  navigation, route }) => {
 
-    const [day, setDay] = useState('');
-    const [start, setStart] = useState('');
-    const [end, setEnd] = useState('');
+    const [begin, setBegin] = useState('');
+    const [begint, setBegint] = useState('');
+    const [endtime, setEndtime] = useState('');
     const [stream, setStream] = useState('');
     const [subject, setSubject] = useState('');
     const [grade, setGrade] = useState('');
+    const [subjects, setSubjects] = useState([]);
+    const [streams, setStreams] = useState([]);
     
   const cid = route.params
   const id = cid.id
 
-  useEffect(()=>{
-    const url = `https://edumate-backend.herokuapp.com/examtime/${id}`
-    axios.get(url).then((res) => {
-      setStream(res.data.stream )
-      setSubject(res.data.subject)
-      setStart(res.data.start)
-      setEnd(res.data.end)
-      setDay(res.data.day)
-      setGrade(res.data.grade)
-      console.log(res.data)
+    
+   const loadData = async () => {
+        const q = doc(db,'exam',id);
+        const docref = await getDoc(q);
+        console.log(docref.data());
+        setBegin(docref.data().begin);
+        setBegint(docref.data().begint); 
+        setEndtime(docref.data().endtime);  
+        setGrade(docref.data().grade);  
+        setStream(docref.data().stream);  
+        setSubject(docref.data().subject);  
+ 
+    };
+
+    const onChangeHandler = async() =>{
+            const ref = doc(db,'exam',id);
+            await updateDoc(ref,{
+              begin:begin,
+              begint:begint,
+              endtime: endtime,
+              stream:stream,
+              subject:subject,
+              grade:grade
+          });
+        navigation.navigate("getexams")
+      
+      }
+
+      const loadStreams = async () => {
+        const q = query(
+        collection(db,'stream'),
+    );
+          onSnapshot(q,(snapshot)=>{
+            setStreams(snapshot.docs.map(doc=>({
+      
+        id:doc.id,
+        data:doc.data()
+      })))
     })
-  },[])
-
-
-  const onChangeHandler = (e) => {
-    const data = {day, start, end, stream, subject, grade}
-    e.preventDefault()
-    const url = `https://edumate-backend.herokuapp.com/examtime/${id}`
-    axios.put(url, data).then((res) => {
-      alert('updated');
-      navigation.navigate('getexams');
-
-    })
-  }
+    };
+  
+    const loadSubjects = async () => {
+      const q = query(
+      collection(db,'subject'),
+  );
+        onSnapshot(q,(snapshot)=>{
+          setSubjects(snapshot.docs.map(doc=>({
+    
+      id:doc.id,
+      data:doc.data()
+    })))
+  })
+  };
+  
+    useEffect(() => {
+      loadStreams()
+      loadSubjects()
+      loadData();
+    },[])
 
   return (
         <StyledContainer >
@@ -90,35 +126,61 @@ export const UpdateExam = ({  navigation, route }) => {
               placeholder='Date'
               icon='calendar'
               placeholderTextColor={darkLight}
-              onChangeText={(day) => setDay(day)}
-              value={day}
+              onChangeText={(begin) => setBegin(begin)}
+              value={begin}
             />
            <InputCd
               placeholder='Start time'
               icon='clock'
               placeholderTextColor={darkLight}
-              onChangeText={(start) => setStart(start)}
-              value={start}
+              onChangeText={(begint) => setBegint(begint)}
+              value={begint}
             />
            <InputCd
               placeholder='End time'
               icon='clock'
               placeholderTextColor={darkLight}
-              onChangeText={(end) => setEnd(end)}
-              value={end}
+              onChangeText={(endtime) => setEndtime(endtime)}
+              value={endtime}
             />
-            <InputCd
-              placeholder='Stream'
-              placeholderTextColor={darkLight}
-              onChangeText={(stream) => setStream(stream)}
-              value={stream}
-            />
-            <InputCd
-              placeholder='Subject'
-              placeholderTextColor={darkLight}
-              onChangeText={(subject) => setLesson(subject)}
-              value={subject}
-            />
+            <View style={styles.Picker}>
+              <Picker
+                    selectedValue={stream}
+                    onValueChange={(itemValue, itemIndex) =>
+                    setStream(itemValue)
+                    }
+                    >
+                    {streams.map((sub) => {
+                    return (
+                          <Picker.Item
+                            id={sub.id}
+                            label={sub.data.streamname}
+                            value={sub.data.streamname}
+                            />
+                          )
+                          })}
+                  </Picker>
+            </View>
+            <View style={styles.Picker}>
+            <Picker
+                    selectedValue={subject}
+                    onValueChange={(itemValue, itemIndex) =>
+                    setSubject(itemValue)
+                    }
+                    >
+                    <Picker.Item label={subject}/>
+                    {subjects.map((sub) => {
+                    return (
+                          <Picker.Item
+                            id={sub.id}
+                            label={sub.data.subjectname}
+                            value={sub.data.subjectname}
+                            />
+                          )
+                          })}
+                  </Picker>
+            </View>
+     
             <Picker
               placeholder='Grade'
               selectedValue={grade}

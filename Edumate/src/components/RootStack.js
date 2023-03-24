@@ -37,19 +37,19 @@ export const RootStack = () => {
             headerBackTitleVisible: false,
           }}
         >
-          <Stack.Screen
+          {/* <Stack.Screen
             name='LoadingPage'
             component={FirstSrn}
             // options={{ navigationBarHidden: true }}
-          />
-          <Stack.Screen
+          /> */}
+          {/* <Stack.Screen
             name='Login'
             component={Login}
             options={{
               headerShown: false,
             }}
-          />
-          <Stack.Screen
+          /> */}
+          {/* <Stack.Screen
             name='SingUp'
             component={SignUp}
             options={{
@@ -69,7 +69,7 @@ export const RootStack = () => {
             options={{
               headerShown: false,
             }}
-          />
+          /> */}
            <Stack.Screen
             name='Admin'
             component={AdminStack}
@@ -77,13 +77,13 @@ export const RootStack = () => {
               headerShown: false,
             }}
             />
-            <Stack.Screen
+            {/* <Stack.Screen
             name='StudentStack'
             component={StudentStack}
             options={{
               headerShown: false,
             }}
-          />
+          /> */}
           {/* <Stack.Screen
             name='UploadLink'
             component={UploadLink}

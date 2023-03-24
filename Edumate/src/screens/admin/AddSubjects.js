@@ -7,10 +7,8 @@ import {
   SafeAreaView,
   TouchableOpacity,
   TextInput,
-  Platform,
-  Picker
+  Platform
 } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -21,8 +19,11 @@ import {
   StyledTextInput,
   colors,
 } from '../../constants/styles.js'
+import { Picker } from '@react-native-picker/picker'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
+import { addDoc, collection, doc, onSnapshot, query } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
 
@@ -33,26 +34,33 @@ export const AddSubjects = ({navigation}) => {
   const [subjectname, setSubjectname] = useState('')
   const [streams, setStreams] = useState([])
 
-  const formData = {streamname, subjectname}
+  const onChangeHandler = async() => {
+      await addDoc(collection(db,"subject"),{
+      streamname:streamname,
+      subjectname:subjectname
+    }
+    );
 
-  const onChangeHandler = () => {
-    const url = `https://edumate-backend.herokuapp.com/subject/add`
-    axios.post(url, formData).then((res) => {
-      alert('Subject added')
-      navigation.navigate("getsubjects")
-    })
+    navigation.navigate("getsubjects")
+
   }
 
-  const loadStreams = async () => {
-    const url = `https://edumate-backend.herokuapp.com/stream/`
-    await axios.get(url).then((res) => {
-        setStreams(res.data)
-    })
-  }
+    const loadStreams = async () => {
+      const q = query(
+      collection(db,'stream'),
+  );
+        onSnapshot(q,(snapshot)=>{
+          setStreams(snapshot.docs.map(doc=>({
+    
+      id:doc.id,
+      data:doc.data()
+    })))
+  })
+  };
 
   useEffect(() => {
     loadStreams()
-  })
+  },[])
 
     const getMessage = () => {
       const status = isError ? `Error: ` : `Success: `
@@ -60,25 +68,26 @@ export const AddSubjects = ({navigation}) => {
     }
   
     return (
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.text}> Add Subject </Text>
-          {/* <Picker
-              selectedValue={streamname}
-              onValueChange={(itemValue, itemIndex) => setStreamname(itemValue)}
-            >
-              {streams.map((s)=>{
-                return(
-                  <Picker.Item  value={s.streamname} />
-                )
-              })}
-            
-            </Picker> */}
-            <InputCd
-              placeholder='Stream Name'
-              placeholderTextColor={darkLight}
-              value={streamname}
-              onChangeText={(streamname) => setStreamname(streamname)}
-            />
+      <SafeAreaView style={styles.container}>        
+            <View style={styles.Picker}>
+              <Picker
+                    selectedValue={streamname}
+                    onValueChange={(itemValue, itemIndex) =>
+                    setStreamname(itemValue)
+                    }
+                    >
+                    <Picker.Item label='Choose Stream' />
+                    {streams.map((sub) => {
+                    return (
+                          <Picker.Item
+                            id={sub.id}
+                            label={sub.data.streamname}
+                            value={sub.data.streamname}
+                            />
+                          )
+                          })}
+                  </Picker>
+            </View>
               <InputCd
               placeholder='Subject Name'
               placeholderTextColor={darkLight}
