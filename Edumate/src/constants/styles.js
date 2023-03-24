@@ -487,3 +487,15 @@ export const AdminButton = styled.TouchableOpacity`
   height: 40px;
   width: 100px;
 `
+export const AdminHomebutton = styled.TouchableOpacity`
+    flex-direction: row;
+    border-color: ${brand};
+    border: 2px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    margin-left: 40px;
+    height: 55px;
+    width: 300px;
+    margin-top: 50px;
+`
