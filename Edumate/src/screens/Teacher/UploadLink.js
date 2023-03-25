@@ -16,6 +16,8 @@ import { StatusBar } from 'expo-status-bar'
 import { Octicons } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
+import { collection, addDoc, Timestamp } from 'firebase/firestore'
+import { db } from '../../../core/config.js'
 
 const { brand, darkLight, primary } = colors
 
@@ -84,11 +86,23 @@ export const UploadLink = ({navigation}) => {
     if (lesson_name == '' || grade == '' || link == '') {
       alert('Please fill the given fields')
     } else {
-      const url = `https://edumate-backend.herokuapp.com/link/add`
-      axios.post(url, data).then((res) => {
-        alert('Link added')
-        navigation.navigate('TeacherDash')
+      // const url = `https://edumate-backend.herokuapp.com/link/add`
+      // axios.post(url, data).then((res) => {
+      //   alert('Link added')
+      //   navigation.navigate('TeacherDash')
+      // })
+      addDoc(collection(db, 'links'), {
+        subject: "test",
+        lesson_name,
+        grade,
+        date: linkDate,
+        time: linkTime,
+        link,
+        teacher_id: '515',
+        created: Timestamp.now(),
       })
+      alert('Link added')
+      // navigation.navigate('TeacherDash')
     }
   }
 

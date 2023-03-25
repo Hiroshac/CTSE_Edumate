@@ -2,32 +2,31 @@ import { StyleSheet, Text, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { InnerContainer } from '../../constants/styles'
-import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { getDoc, doc } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
-var userId = ''
-AsyncStorage.getItem('user').then((value) => {
-  userId = value
-})
+var userId = 'MdaHUyN5DV2gCB8E3rgB'
+// AsyncStorage.getItem('user').then((value) => {
+//   userId = value
+// })
 
 export default function ProfileUpper() {
   const [name, setName] = useState('')
   const [role, setRole] = useState('')
   const [stream, setStream] = useState('')
-  // const [id, setId] = useState('631790c1cd120dcba06fbf90')
 
   useEffect(() => {
     loadData()
-  },[])
+  }, [])
   const loadData = async () => {
-    await axios
-      .get(`https://edumate-backend.herokuapp.com/api/users/${userId}`)
-      .then((res) => {
-        const name = res.data.firstName + ' ' + res.data.lastName
-        setName(name)
-        setRole(res.data.type)
-        setStream(res.data.stream)
-      })
+    const q = doc(db, 'user', userId)
+    const docSnap = await getDoc(q)
+    const res = docSnap.data()
+    const name = res.firstName + ' ' + res.lastName
+    setName(name)
+    setRole(res.type)
+    setStream(res.stream)
   }
   return (
     <>
