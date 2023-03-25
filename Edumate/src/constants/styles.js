@@ -449,3 +449,75 @@ export const SAStyledButton = styled.TouchableOpacity`
   margin: 5px;
   height: 70px;
   `
+  export const Feedback = styled.View`
+  width: 350px;
+  height: 150px;
+  border-color: ${secondary};
+  border: 2px;
+  margin-bottom: 30px;
+  borderRadius: 10;
+  // align-items: center;
+  // margin-left: 10px;
+`
+export const Row = styled.View`
+flex-direction: row;
+flex: 1;
+
+justify-content:center;
+// width: 350px;
+// height: 150px;
+// border-color: ${secondary};
+// border: 1px;
+// margin-bottom: 30px;
+// align-items: center;
+// margin-left: 10px;
+`
+export const Col = styled.View`
+  //  flex:2;
+// width: ;
+// height: 150px;
+// border-color: ${secondary};
+// border: 1px;
+// margin-bottom: 30px;
+// align-items: center;
+// margin-left: 10px;
+`
+
+export const ButtonEx = styled.TouchableOpacity`
+  background-color: ${primary};
+  justify-content: center;
+  border: 2px;
+  border-color: ${brand};
+  align-items: center;
+  border-radius: 5px;
+  margin: 5px;
+  height: 40px;
+  width: 100px;
+  `
+
+  export const ButtonDel = styled.TouchableOpacity`
+  background-color: ${primary};
+  justify-content: center;
+  border: 2px;
+  border-color: ${brand};
+  align-items: center;
+  border-radius: 5px;
+  margin: 5px;
+  height: 40px;
+  width: 100px;
+  `
+
+  export const RowButton = styled.TouchableOpacity`
+  flex-direction: row;
+  // flex: 1;
+  // background-color: ${brand};
+  border-color: ${brand};
+  border: 2px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+  margin-left: 40px;
+  height: 55px;
+  width: 300px;
+  margin-top: 50px;
+  `

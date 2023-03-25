@@ -68,9 +68,6 @@ import {
 import { db } from '../../../core/config'
 import { getAuth, signOut } from 'firebase/auth'
 const { brand, darkLight, primary } = colors
-
-// const API_URL =
-//   Platform.OS === "ios" ? "http://localhost:5000" : "http://10.0.2.2:5000";
 var userId = "";
 AsyncStorage.getItem("user").then((value) => {
   userId = value;
