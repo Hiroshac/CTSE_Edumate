@@ -22,11 +22,6 @@ import { db } from '../../../core/config'
 import { getAuth } from '@firebase/auth'
 const { primary } = colors
 
-// var userId = 'MdaHUyN5DV2gCB8E3rgB'
-// AsyncStorage.getItem('user').then((value) => {
-//   userId = value
-// })
-
 export default function Profile({ navigation }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -38,7 +33,6 @@ export default function Profile({ navigation }) {
   const [userId, setUserId] = useState(null)
   const auth = getAuth()
   const user = auth.currentUser
-  // console.log(user.uid)
 
   useEffect(() => {
     getUser()
@@ -64,9 +58,6 @@ export default function Profile({ navigation }) {
     }
   }
 
-  // useEffect(() => {
-  //     loadData()
-  // }, [])
   const loadData = async () => {
     const q = doc(db, 'user', userId)
     const docSnap = await getDoc(q)
@@ -86,6 +77,14 @@ export default function Profile({ navigation }) {
       .then(() => {
         alert('Profile Successfully deleted')
         navigation.navigate('Login')
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    auth.currentUser
+      .delete()
+      .then(() => {
+        console.log('Successfully deleted user')
       })
       .catch((err) => {
         console.log(err)

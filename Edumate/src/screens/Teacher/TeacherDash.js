@@ -72,7 +72,6 @@ export const TeacherDash = ({ navigation }) => {
   const [userDetails, setUserDetails] = useState()
 
   const user = auth.currentUser
-  console.log(user.uid)
 
   useEffect(() => {
     getUser()

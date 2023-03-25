@@ -14,11 +14,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getAuth, updatePassword, signOut } from '@firebase/auth'
 const { darkLight, black } = colors
 
-// var userId = 'MdaHUyN5DV2gCB8E3rgB'
-// // AsyncStorage.getItem('user').then((value) => {
-// //   userId = value
-// // })
-
 export default function ResetPassword({ navigation }) {
   const [newPwd, setNewPwd] = useState('')
   const [newrPwd, setNewrPwd] = useState('')
@@ -53,32 +48,6 @@ export default function ResetPassword({ navigation }) {
     if (data.newPassword == '' || data.newrPassword == '') {
       handleMessage('Please fill all the fields', 'FAILED')
     } else {
-      // if (newPwd != newrPwd) {
-      //   handleMessage('Password Mismatch!!!', 'FAILED')
-      // } else {
-      //   const q = doc(db, 'user', userId)
-      //   const docSnap = await getDoc(q)
-      //   const res = docSnap.data()
-      //   if (res.data.password == data.oldPassword) {
-      //     const userDocRef = doc(db, 'user', userId)
-      //     await updateDoc(userDocRef, {
-      //       password: data.newPassword,
-      //     })
-      //       .then((res) => {
-      //         alert('Password Updated Successfully')
-      //         Logout()
-      //       })
-      //       .catch((err) => {
-      //         console.log(err)
-      //         setTimeout(() => {
-      //           handleMessage('Something is Wrong !!!', 'FAILED')
-      //         }, 3000)
-      //         handleMessage('')
-      //       })
-      //   } else {
-      //     handleMessage('Incorrect existing password', 'FAILED')
-      //   }
-      // }
       updatePassword(user, newrPwd)
         .then(() => {
           alert('Updated Successfully')

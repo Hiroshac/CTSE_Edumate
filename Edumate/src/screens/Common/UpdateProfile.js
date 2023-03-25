@@ -18,11 +18,6 @@ import { doc, updateDoc, getDoc } from 'firebase/firestore'
 import { db } from '../../../core/config'
 const { darkLight, black, brand } = colors
 
-// var userId = 'MdaHUyN5DV2gCB8E3rgB'
-// AsyncStorage.getItem('user').then((value) => {
-//   userId = value
-// })
-
 export default function UpdateProfile({ navigation }) {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -75,19 +70,6 @@ export default function UpdateProfile({ navigation }) {
       console.log('Fail to get user')
     }
   }
-
-  // useEffect(() => {
-  //   loadData()
-  // }, [])
-  // const loadData = async () => {
-  //   const q = doc(db, 'user', userId)
-  //   const docSnap = await getDoc(q)
-  //   const res = docSnap.data()
-  //   setFirstName(res.firstName)
-  //   setLastName(res.lastName)
-  //   setEmail(res.email)
-  //   setDob(res.dateOfBirth)
-  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault()

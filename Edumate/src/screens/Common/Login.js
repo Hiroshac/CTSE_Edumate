@@ -43,10 +43,6 @@ export default function Login({ navigation }) {
   const [messageType, setMessageType] = useState()
 
   const handleSubmit = async (e) => {
-    // const credentials = {
-    //   email: email,
-    //   password: password,
-    // }
     if (email != '' && password != '') {
       const user = await signInWithEmailAndPassword(
         auth,
@@ -56,34 +52,7 @@ export default function Login({ navigation }) {
         .then(async (userCredential) => {
           const user = userCredential.user
           setUid(user.uid)
-          await userNavigation(userCredential.user.uid)
-          // await const pm =(() => {
-          //   const answer = query(collection(db, 'user'))
-          //   const qm = query(answer, where('uid', '==', userCredential.user.uid))
-          //   onSnapshot(qm, (querySnapshot) => {
-          //     setUserDetails(
-          //       querySnapshot.docs.map((doc) => ({
-          //         id: doc.id,
-          //         data: doc.data(),
-          //       }))
-          //     )
-          //   })
-          //   userDetails.map((user) => {
-          //     console.log(user.data.type)
-          //     if (user.data.type == 'student' || user.data.type == 'Student') {
-          //       navigation.replace('StudentStack')
-          //     } else if (
-          //       user.data.type == 'teacher' ||
-          //       user.data.type == 'Teacher'
-          //     ) {
-          //       navigation.replace('Teacher')
-          //     } else if (user.data.type == 'Admin' || user.data.type == 'Admin') {
-          //       navigation.replace('Admin')
-          //     } else {
-          //       alert('Please try again!!!')
-          //     }
-          //   })
-          // })
+          userNavigation(userCredential.user.uid)
         })
         .catch((error) => {
           if (error.code === 'auth/user-not-found') {
@@ -130,26 +99,33 @@ export default function Login({ navigation }) {
           data: doc.data(),
         }))
       )
+      var _userDetails = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        data: doc.data(),
+      }))
+      if (_userDetails.length > 0) {
+        _userDetails.map((user) => {
+          setUser(user.id)
+          if (user.data.type == 'student' || user.data.type == 'Student') {
+            navigation.replace('StudentStack')
+          } else if (
+            user.data.type == 'teacher' ||
+            user.data.type == 'Teacher'
+          ) {
+            navigation.replace('Teacher')
+          } else if (user.data.type == 'Admin' || user.data.type == 'Admin') {
+            navigation.replace('Admin')
+          } else {
+            alert('Please try again!!!')
+          }
+        })
+      }
     })
-    if (userDetails.length > 0) {
-      userDetails.map((user) => {
-        setUser(user.id)
-        if (user.data.type == 'student' || user.data.type == 'Student') {
-          navigation.replace('StudentStack')
-        } else if (user.data.type == 'teacher' || user.data.type == 'Teacher') {
-          navigation.replace('Teacher')
-        } else if (user.data.type == 'Admin' || user.data.type == 'Admin') {
-          navigation.replace('Admin')
-        } else {
-          alert('Please try again!!!')
-        }
-      })
-    }
   }
   const setUser = async (id) => {
     try {
       await AsyncStorage.setItem('@user', id)
-      console.log('Name stored successfully')
+      console.log('Id stored successfully')
     } catch (e) {
       console.log('Failed to store the id')
     }
