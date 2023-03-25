@@ -140,7 +140,7 @@ export const UpdateNote = ({ route, navigation }) => {
   return (
     <StyledContainer>
       <StatusBar style='dark' />
-      <PageTitle>Upload Note</PageTitle>
+      <PageTitle>Update Note</PageTitle>
       <InnerContainer>
         <View>
           <View>
@@ -173,7 +173,7 @@ export const UpdateNote = ({ route, navigation }) => {
               </UploadingButton>
             </UploadButton>
             <StyledButton onPress={onChangeHandler}>
-              <ButtonText>Upload</ButtonText>
+              <ButtonText>Update</ButtonText>
             </StyledButton>
           </View>
         </View>
