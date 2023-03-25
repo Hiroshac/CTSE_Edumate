@@ -353,7 +353,7 @@ export const StyledTextInputComment = styled.TextInput`
   border-radius: 5px;
   font-size: 16px;
   width: 270;
-  height: 200px;
+  height: 100px;
   margin-bottom: 70px;
   color: ${tertiary};
 `

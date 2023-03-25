@@ -53,6 +53,7 @@ export const UpdateLink = ({ route, navigation }) => {
   const { id } = route.params
   console.log(id)
   // const id = '636cbe0453ef6c69dc31e041'
+
   const validateDate = d
   var linkDate = validateDate.toLocaleDateString('en-GB')
   var linkTime = validateDate.toLocaleTimeString('en-GB')
@@ -89,6 +90,7 @@ export const UpdateLink = ({ route, navigation }) => {
     setDate(docSnap.data().date)
     setTime(docSnap.data().time)
     setLink(docSnap.data().link)
+    setTeacher(docSnap.data().teacher_id)
     // onSnapshot(q, (querySnapshot) => {
     //   setDateLinks(
     //     querySnapshot.docs.map((doc) => ({
@@ -123,7 +125,7 @@ export const UpdateLink = ({ route, navigation }) => {
       date: linkDate,
       time: linkTime,
       link,
-      teacher_id: '516',
+      teacher_id,
     })
     alert('Updated')
     navigation.navigate('TeacherDash')

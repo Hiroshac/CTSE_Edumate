@@ -286,7 +286,7 @@ export const TeacherDash = ({ navigation }) => {
             >
               {note.map((notes) => {
                 return (
-                  <TeacherCard key={notes.data.id}>
+                  <TeacherCard key={notes.id}>
                     <TeacherCardRow>
                       <TeacherCardColumn>
                         <TeacherDashContent>

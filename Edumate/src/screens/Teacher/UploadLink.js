@@ -27,6 +27,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '../../../core/config.js'
 import { getAuth } from 'firebase/auth'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const { brand, darkLight, primary } = colors
 
@@ -46,7 +47,10 @@ export const UploadLink = ({ navigation }) => {
   var linkDate = validateDate.toLocaleDateString('en-GB')
 
   var linkTime = validateDate.toLocaleTimeString('en-GB')
-
+    var userId = ''
+    AsyncStorage.getItem('@user').then((value) => {
+      userId = value
+    })
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate
     setDate(currentDate)
@@ -95,7 +99,7 @@ export const UploadLink = ({ navigation }) => {
         date: linkDate,
         time: linkTime,
         link,
-        teacher_id:user.uid,
+        teacher_id:userId,
         created: Timestamp.now(),
       })
       alert('Link added')

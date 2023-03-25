@@ -109,7 +109,7 @@ export const Answers = ({ navigation }) => {
                           Subect : {answer.data.subjectname}
                         </TeacherDashContent>
                         <TeacherDashContent>
-                          Grade {answer.data.grade}
+                          {/* Grade {answer.data.grade} */}
                         </TeacherDashContent>
                         <TeacherDashContent>
                           Student Id : {answer.data.username}

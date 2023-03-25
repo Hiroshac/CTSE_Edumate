@@ -90,7 +90,7 @@ export const Feedback = ({ route, navigation }) => {
   return (
     <StyledContainer>
       <StatusBar style='dark' />
-      <PageTitle>Comments</PageTitle>
+      <PageTitle>Feedbacks</PageTitle>
       <InnerContainer>
         <View>
           <ScrollView>
