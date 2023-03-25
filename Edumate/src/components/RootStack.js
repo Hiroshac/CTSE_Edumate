@@ -20,6 +20,7 @@ import { StudentDash } from '../screens/student/StudentDash'
 import { StudentStack } from './StudentStack'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../../core/config'
+import { Feedback } from '../screens/Teacher/Feedbacks'
 
 const Stack = createNativeStackNavigator()
 
@@ -122,8 +123,8 @@ export const RootStack = () => {
             }}
           />
           <Stack.Screen
-            name='Comments'
-            component={Comment}
+            name='Feedback'
+            component={Feedback}
             options={{
               headerShown: false,
             }}
