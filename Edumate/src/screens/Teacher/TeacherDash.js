@@ -1,46 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react'
 import {
-  ImageBackground,
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
-  Platform,
   ScrollView,
   DrawerLayoutAndroid,
-  Button,
   Image,
   Linking,
   RefreshControl,
 } from 'react-native'
-import axios from 'axios'
-import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
-  StyledContainer,
   InnerContainer,
-  PageLogo,
   PageTitle,
-  SubTitle,
-  StyledFormArea,
-  LeftIcon,
-  RightIcon,
-  StyledInputLabel,
-  StyledButton,
   ButtonText,
-  StyledTextInput,
   colors,
-  MsgBox,
-  Line,
-  ExtraView,
-  ExtraText,
-  TextLink,
-  TextLinkContent,
-  StyledButtoWhite,
-  ButtonTextWhite,
-  UploadButton,
-  UploadingButton,
   DiscoverTitle,
   DiscoverText,
   DashButton,
@@ -345,7 +320,7 @@ export const TeacherDash = ({ navigation }) => {
               {link.map((links) => {
                 return (
                   <>
-                    <TeacherCard key={links.data.id}>
+                    <TeacherCard key={links.id}>
                       <TeacherCardRow>
                         <TeacherCardColumn>
                           <TeacherDashContent>
