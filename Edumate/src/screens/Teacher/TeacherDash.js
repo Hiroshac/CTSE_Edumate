@@ -280,7 +280,7 @@ export const TeacherDash = ({ navigation }) => {
             >
               {note.map((notes) => {
                 return (
-                  <TeacherCard key={notes.data.id}>
+                  <TeacherCard key={notes.id}>
                     <TeacherCardRow>
                       <TeacherCardColumn>
                         <TeacherDashContent>
@@ -302,19 +302,6 @@ export const TeacherDash = ({ navigation }) => {
                         </TeacherDashContent>
                       </TeacherCardColumn>
                       <TeacherCardColumn>
-                        <TeacherDashContentButton
-                          onPress={() => {
-                            navigation.navigate('Comments', {
-                              id: notes.data.id,
-                            })
-                          }}
-                        >
-                          <Octicons
-                            size={20}
-                            color={darkLight}
-                            name='comment'
-                          />
-                        </TeacherDashContentButton>
                         <TeacherDashContentButton
                           onPress={() => {
                             navigation.navigate('UpdateNote', {
@@ -378,7 +365,7 @@ export const TeacherDash = ({ navigation }) => {
                           <TeacherDashContentButton
                             onPress={() => {
                               navigation.navigate('UpdateLink', {
-                                id: links.data.id,
+                                id: links.id,
                               })
                             }}
                           >

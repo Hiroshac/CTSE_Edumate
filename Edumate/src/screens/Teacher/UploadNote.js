@@ -54,7 +54,7 @@ export const UploadNote = ({ navigation }) => {
   const user = auth.currentUser
   // console.log(user.uid)
   var userId = ''
-  AsyncStorage.getItem('user').then((value) => {
+  AsyncStorage.getItem('@user').then((value) => {
     userId = value
   })
 
@@ -125,7 +125,7 @@ export const UploadNote = ({ navigation }) => {
         lesson_name,
         grade,
         note: file,
-        teacher_id: user.uid,
+        teacher_id: userId,
         created: Timestamp.now(),
       })
       alert('Note added')

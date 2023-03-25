@@ -94,12 +94,12 @@ export const Marks = ({ route, navigation }) => {
                   <TeacherCard key={data.id}>
                     <SubTitle>Student : {data.data.student_id}</SubTitle>
                     <SubTitle1></SubTitle1>
-                    <Comments>
-                      <SubTitle>Mark</SubTitle>
-                      <SubTitle1>{data.data.mark}</SubTitle1>
+                    <SubTitle>Mark</SubTitle>
+                    <SubTitle1>{data.data.mark}</SubTitle1>
+                    <>
                       <SubTitle>Comment</SubTitle>
                       <SubTitle1>{data.data.comment}</SubTitle1>
-                    </Comments>
+                    </>
                   </TeacherCard>
                 </>
               )

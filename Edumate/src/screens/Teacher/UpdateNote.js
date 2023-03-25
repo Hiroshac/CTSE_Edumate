@@ -110,6 +110,7 @@ export const UpdateNote = ({ route, navigation }) => {
     setLesson(docSnap.data().lesson_name)
     setGrade(docSnap.data().grade)
     setNote(docSnap.data().note)
+    setTeacher(docSnap.data().teacher_id)
   }
 
   useEffect(() => {
