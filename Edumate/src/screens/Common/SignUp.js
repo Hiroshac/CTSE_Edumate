@@ -86,7 +86,7 @@ export default function SignUp({ navigation }) {
         await createUserWithEmailAndPassword(auth, email, password)
           .then(async (userCredential) => {
             const user = userCredential.user
-            await addDoc(collection(db, '@user'), {
+            await addDoc(collection(db, 'user'), {
               uid: user.uid,
               firstName: firstName,
               lastName: lastName,

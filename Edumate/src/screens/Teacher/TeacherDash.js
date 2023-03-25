@@ -70,23 +70,21 @@ export const TeacherDash = ({ navigation }) => {
   const [link, setlink] = useState([])
   const [note, setNote] = useState([])
   const [refreshing, setRefreshing] = useState(true)
-  const auth = getAuth()
   const [userId, setUserId] = useState(null)
+  const auth = getAuth()
 
   const user = auth.currentUser
   // console.log(user.uid)
 
   useEffect(() => {
-    getUser
+    getUser()
   }, [])
 
   const getUser = async () => {
     try {
       const user = await AsyncStorage.getItem('@user').then((value) => {
-        console.log(value)
         setUserId(value)
       })
-      console.log(user)
     } catch (e) {
       console.log('Fail to get user')
     }
