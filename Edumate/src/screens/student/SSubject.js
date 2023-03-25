@@ -2,77 +2,68 @@ import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ButtonText,
+  DrawerBtn,
   PageTitle,
+  RowButton,
   StyledButton,
   StyledContainer,
 } from "../../constants/styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import { RefreshControl, ScrollView,StyleSheet } from "react-native";
+import { RefreshControl, ScrollView,StyleSheet, Text, View } from "react-native";
+import { collection, getDoc, onSnapshot, query, where } from 'firebase/firestore';
+import { db } from "../../../core/config";
+import { Octicons, Ionicons, Fontisto, Entypo, AntDesign, MaterialIcons } from "@expo/vector-icons";
 
-var userId = "636fa108822e88b4ac2ef253";
-AsyncStorage.getItem("user").then((value) => {
-  userId = value;
-});
 
-const wait = (timeout) => {
-  return new Promise((resolve) => setTimeout(resolve, timeout));
-};
+export const SSubject = ({ navigation,route }) => {
 
-export const SSubject = ({ navigation }) => {
+  const getstream = route.params.stream;
+  const getid = route.params.id;
   const [refreshing, setRefreshing] = useState(true)
   const [item, setItem] = useState([]);
   const drawer = useRef(null);
   const [stream, setStream] = useState("");
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    wait(5000).then(() => setRefreshing(false));
-  
-      // loadData();
-  }, []);
 
   useEffect(() => {
     loadData();
   }, []);
 
+  //fetch subject according to the user stream
   const loadData = async () => {
-    await axios
-      .get(`https://edumate-backend.herokuapp.com/api/users/${userId}`)
-      .then(async (res) => {
-        const name = res.data.firstName + " " + res.data.lastName;
-        setRefreshing(false)
-        setStream(res.data.stream);
-        axios
-          .post("https://edumate-backend.herokuapp.com/subject/stream", {
-            streamname: stream,
-          })
-          .then((res) => {
-            setRefreshing(false)
-            setItem(res.data);
-          });
-      });
+    const q = query(
+      collection(db,'subject'),
+      where("streamname","==",getstream)
+    );
+    onSnapshot(q,(snapshot)=>{
+      setItem(snapshot.docs.map(doc=>({
+        id:doc.id,
+        data:doc.data()
+      })))
+    })
+
   };
 
   return (
+
     <StyledContainer>
       <ScrollView
-    refreshControl={
-      <RefreshControl refreshing={refreshing} onRefresh={loadData} />
-    }
       >
       <StatusBar style="dark" />
       <PageTitle style={styles.h}>Subject</PageTitle>
       {item.map((r) => {
         return (
-          <StyledButton
-          style={styles.hc}
-            onPress={() => {
-              navigation.navigate("Studentsubject", { name: r.subjectname });
-            }}
-          >
-            <ButtonText>{r.subjectname}</ButtonText>
-          </StyledButton>
+          <View>
+            <Entypo name="book" size={24} color="black" />
+            <RowButton
+            style={styles.hc}
+              onPress={() => {
+                navigation.navigate("Studentsubject", { name: r.data.subjectname,id:getid });
+              }}
+            >
+              <Text style={{fontSize:20}}>{r.data.subjectname}</Text>
+            </RowButton>
+          </View>
         );
       })}
 

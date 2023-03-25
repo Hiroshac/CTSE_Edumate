@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { View, Platform, ToastAndroid, Alert } from "react-native";
-import axios from "axios";
 import { Input } from "../../constants/InputField";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
@@ -23,22 +22,25 @@ import { UploadFile } from "../../../core/fileUpload";
 import { LogBox } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import { Picker } from "@react-native-picker/picker";
+import { addDoc, collection, doc, getDoc } from "firebase/firestore";
+import { db } from "../../../core/config";
 
 LogBox.ignoreLogs(["Setting a timer"]);
 
 const { brand, darkLight, primary } = colors;
 
-const API_URL =
-  Platform.OS === "ios" ? "http://localhost:5000" : "http://10.0.2.2:5000";
-
 export const StduentAnswerSheetUpload = ({ navigation, route }) => {
   const getname = route.params;
   const subjectname = getname.name;
+  const id = getname.id;
+  console.log(id);
   const [subject, setSubject] = useState([]);
   const [stream,setStream] = useState('');
+  const [username,setUsername] = useState('');
   const [lname, setLesson] = useState("");
   const [grade, setGrade] = useState("");
   const [image, setNote] = useState();
+  const [url, setUrl] = useState("");
   const [student_id, setTeacher] = useState();
 
   const [blobFile, setBlobFile] = useState(null);
@@ -63,24 +65,26 @@ export const StduentAnswerSheetUpload = ({ navigation, route }) => {
     }
   }, [uploadCompleted]);
   
-  const loadSubject = () => {
-    axios
-    .get(`https://edumate-backend.herokuapp.com/api/users/${userId}`)
-    .then(async (res) => {
-      setStream(res.data.stream);
-    });
+  const loadSubject = async() => {
+    const q = doc(db,'user',id);
+    const docref = await getDoc(q);
+    console.log(docref.data());
+    setStream(docref.data().stream);
+    setUsername(docref.data().firstName);
   };
+  console.log(username);
 
   useEffect(() => {
     loadSubject();
   }, []);
 
+  //pick document and fetch document details
   const pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({});
 
     if (result != null) {
       const r = await fetch(result.uri);
-
+      setUrl(result.uri);
       const b = await r.blob();
       setFileName(result.name);
       setBlobFile(b);
@@ -102,26 +106,21 @@ export const StduentAnswerSheetUpload = ({ navigation, route }) => {
     }
   };
 
-  const onChangeHandler = async () => {
-    if ( lname == "" || image == "") {
-      alert("Please fill the given fields");
-    } else {
-      uploadFile();
-      const data = {
-        subject: subjectname,
-        stream,
-        lname: lname,
-        grade,
-        image: file,
-        student_id: userId,
-      };
-      const url = `https://edumate-backend.herokuapp.com/studentanswers/add`;
-      await axios.post(url, data).then((res) => {
-        alert("Answer Sheets added");
-        // navigation.navigate("");
-      });
-    }
-  };
+  //add answer sheet
+  const onChangeHandler = async() =>{
+    await addDoc(collection(db,"answer"),{
+      subjectname:subjectname,
+      username:username,
+      lname:lname,
+      grade:grade,
+      url:url,
+      sid:id,
+      status:"notdone"
+    });
+
+    console.log("Add");
+    navigation.navigate("Studentsubject",{ name: subjectname,id:id });
+  }
   return (
     <StyledContainer>
       <StatusBar style="dark" />
@@ -131,7 +130,7 @@ export const StduentAnswerSheetUpload = ({ navigation, route }) => {
           <View>
             <InputCd
               placeholderTextColor={darkLight}
-              name="lesson_name"
+              // name="lesson_name"
               disabled
               value={subjectname}
             />
