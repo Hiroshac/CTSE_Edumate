@@ -8,9 +8,8 @@ import {
   TextInput,
   Platform,
   ScrollView,
-  Linking
+  Linking,
 } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -48,33 +47,46 @@ import {
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
+import {
+  doc,
+  updateDoc,
+  collection,
+  query,
+  getDoc,
+  orderBy,
+  onSnapshot,
+  where,
+} from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
 
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
-
-export const Answers = ({navigation}) => {
+export const Answers = ({ navigation }) => {
   const [answer, setAnswers] = useState([])
-  
   const [teacher_id, setTeacher] = useState('')
-
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState('')
 
-  const stream = 'Science'
-  const loadData=()=>{
-    const url = `https://edumate-backend.herokuapp.com/StudentAnswers/getBySubject/${stream}`
-  axios.get(url).then((res) => {
-    setAnswers(res.data)
-    
-      
+  const stream = 'Physics'
+  const loadData = async () => {
+    const answer = query(collection(db, 'answer'))
+    const qm = query(
+      answer,
+      where('status', '==', 'none', '&&', 'subjectname', '==', stream)
+    )
+    onSnapshot(qm, (querySnapshot) => {
+      setAnswers(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
     })
   }
 
   useEffect(() => {
     loadData()
-  },[])
+  }, [])
   const getMessage = () => {
     const status = isError ? `Error: ` : `Success: `
     return status + message
@@ -89,32 +101,32 @@ export const Answers = ({navigation}) => {
           <ScrollView>
             {answer.map((answer) => {
               return (
-                <>
-                  <TeacherCard key={answer._id}>
+                <ScrollView>
+                  <TeacherCard key={answer.id}>
                     <TeacherCardRow>
                       <TeacherCardColumn>
                         <TeacherDashContent>
-                          Subect : {answer.subject}
+                          Subect : {answer.data.subjectname}
                         </TeacherDashContent>
                         <TeacherDashContent>
-                          Grade {answer.grade}
+                          Grade {answer.data.grade}
                         </TeacherDashContent>
                         <TeacherDashContent>
-                          Student Id : {answer.student_id}
+                          Student Id : {answer.data.username}
                         </TeacherDashContent>
                       </TeacherCardColumn>
                       <TeacherCardColumn>
                         <TeacherDashContentButton
                           onPress={() => {
                             navigation.navigate('PaperMarking', {
-                              id: answer._id,
+                              id: answer.id,
                             })
                           }}
                         >
                           <Octicons size={20} color={darkLight} name='pencil' />
                         </TeacherDashContentButton>
                         <TeacherDashContentButton
-                          onPress={() => Linking.openURL(answer.image)}
+                          onPress={() => Linking.openURL(answer.data.image)}
                         >
                           <Octicons
                             size={20}
@@ -125,11 +137,9 @@ export const Answers = ({navigation}) => {
                       </TeacherCardColumn>
                     </TeacherCardRow>
                   </TeacherCard>
-                </>
+                </ScrollView>
               )
-        
-      })}
-            
+            })}
           </ScrollView>
           <View></View>
         </View>

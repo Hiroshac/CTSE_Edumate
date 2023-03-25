@@ -19,27 +19,33 @@ import {
   SAStyledButton,
 } from "../../constants/styles.js";
 import { Octicons, Ionicons, Fontisto } from "@expo/vector-icons";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { db } from "../../../core/config.js";
 const { brand, darkLight, primary } = colors;
 
 export const StudentNotes = ({ navigation, route }) => {
   const [item, setItem] = useState([]);
   const getname = route.params;
   const name = getname.name;
+  console.log(name);
 
-  // useEffect(() => {
-  //   axios.post("/teacherNote/notes", { subject: name }).then(async(res) => {
-  //     setItem(res.data);
-  //     console.log(item);
-  //   });
-  // },[]);
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  axios
-    .post("https://edumate-backend.herokuapp.com/teacherNote/notes", {
-      subject: name,
+  const loadData = async () => {
+    const q = query(
+      collection(db,'notes'),
+      where("subject","==",name)
+    );
+    onSnapshot(q,(snapshot)=>{
+      setItem(snapshot.docs.map(doc=>({
+        id:doc.id,
+        data:doc.data()
+      })))
     })
-    .then(async (res) => {
-      setItem(res.data);
-    });
+
+  };
   return (
     <StyledContainer>
       <StatusBar style="dark" />
@@ -47,11 +53,11 @@ export const StudentNotes = ({ navigation, route }) => {
       {item.map((r) => {
         return (
           <SAStyledButton
-            onPress={() => Linking.openURL(r.note)}
+            onPress={() => Linking.openURL(r.data.note)}
             style={style.btn}
           >
             <Octicons size={40} color={darkLight} name="download" />
-            <Text>{r.lesson_name}</Text>
+            <Text>{r.data.lesson_name}</Text>
           </SAStyledButton>
         );
       })}

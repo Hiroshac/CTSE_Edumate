@@ -7,7 +7,7 @@ import { UploadLink } from '../screens/Teacher/UploadLink'
 import { UploadNote } from '../screens/Teacher/UploadNote'
 import { UpdateLink } from '../screens/Teacher/UpdateLink'
 import { UpdateNote } from '../screens/Teacher/UpdateNote'
-import { Comment } from '../screens/Teacher/Comments'
+import { Feedback } from '../screens/Teacher/Feedbacks'
 import { TeacherDash } from '../screens/Teacher/TeacherDash'
 import { PaperMarking } from '../screens/Teacher/PaperMarking'
 import { Answers } from '../screens/Teacher/Answers'
@@ -37,47 +37,17 @@ export const TeacherStack = () => {
             headerShown: false,
           }}
         />
-        <Stack.Screen
-          name='UploadLink'
-          component={UploadLink}
-          options={{
-            
-          }}
-        />
-        <Stack.Screen
-          name='UploadNote'
-          component={UploadNote}
-          options={{
-          
-          }}
-        />
+        <Stack.Screen name='UploadLink' component={UploadLink} options={{}} />
+        <Stack.Screen name='UploadNote' component={UploadNote} options={{}} />
         <Stack.Screen name='UpdateLink' component={UpdateLink} options={{}} />
-        <Stack.Screen
-          name='UpdateNote'
-          component={UpdateNote}
-          options={{
-         
-          }}
-        />
-        <Stack.Screen
-          name='Comments'
-          component={Comment}
-          options={{
-            
-          }}
-        />
+        <Stack.Screen name='UpdateNote' component={UpdateNote} options={{}} />
+        <Stack.Screen name='Feedbacks' component={Feedback} options={{}} />
         <Stack.Screen
           name='PaperMarking'
           component={PaperMarking}
           options={{}}
         />
-        <Stack.Screen
-          name='Answer'
-          component={Answers}
-          options={{
-          
-          }}
-        />
+        <Stack.Screen name='Answer' component={Answers} options={{}} />
         <Stack.Screen
           name='User'
           component={UserStack}

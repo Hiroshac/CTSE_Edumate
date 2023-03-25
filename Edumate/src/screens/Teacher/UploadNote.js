@@ -23,13 +23,15 @@ import { UploadFile } from '../../../core/fileUpload'
 import { LogBox } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
 import { Picker } from '@react-native-picker/picker'
+import { collection, addDoc, Timestamp, query,  onSnapshot, orderBy  } from 'firebase/firestore'
+import { db } from '../../../core/config.js'
 
 LogBox.ignoreLogs(['Setting a timer'])
 
 const { brand, darkLight, primary } = colors
 
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
+// const API_URL =
+//   Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
 export const UploadNote = ({ navigation }) => {
   const [subject, setSubject] = useState([])
@@ -64,13 +66,22 @@ export const UploadNote = ({ navigation }) => {
 
   const userStream = 'Science'
   const loadSubject = () => {
-    axios
-      .post('https://edumate-backend.herokuapp.com/subject/stream', {
-        streamname: userStream,
-      })
-      .then((res) => {
-        setSubject(res.data)
-      })
+    // axios
+    //   .post('https://edumate-backend.herokuapp.com/subject/stream', {
+    //     streamname: userStream,
+    //   })
+    //   .then((res) => {
+    //     setSubject(res.data)
+    //   })
+     const q = query(collection(db, 'stream'))
+     onSnapshot(q, (querySnapshot) => {
+       setSubject(
+         querySnapshot.docs.map((doc) => ({
+           id: doc.id,
+           data: doc.data(),
+         }))
+       )
+     })
   }
 
   useEffect(() => {
@@ -114,24 +125,27 @@ export const UploadNote = ({ navigation }) => {
   //     50
   //   )
   // }
-
+     
   const onChangeHandler = async () => {
-    if (subject == '' || lesson_name == '' || grade == '' || note == '') {
+    if ( lesson_name == '' || grade == '' || note == '') {
       alert('Please fill the given fields')
     } else {
       uploadFile()
-      const data = {
-        subject: selectedSubject,
+      // const url = `https://edumate-backend.herokuapp.com/teacherNote/add`
+      // await axios.post(url, data).then((res) => {
+      //   alert('Note added')
+      //   navigation.navigate('TeacherDash')
+      // })
+       addDoc(collection(db, 'notes'), {
+        subject: "selectedSubject",
         lesson_name,
         grade,
         note: file,
-        teacher_id: userId,
-      }
-      const url = `https://edumate-backend.herokuapp.com/teacherNote/add`
-      await axios.post(url, data).then((res) => {
-        alert('Note added')
-        navigation.navigate('TeacherDash')
-      })
+        teacher_id: "userId",
+        created: Timestamp.now(),
+       })
+      alert('Note added')
+      navigation.navigate('TeacherDash')
     }
   }
 
@@ -156,8 +170,8 @@ export const UploadNote = ({ navigation }) => {
               {subject.map((sub) => {
                 return (
                   <Picker.Item
-                    label={sub.subjectname}
-                    value={sub.subjectname}
+                    label={sub.data.streamname}
+                    value={sub.data.streamname}
                   />
                 )
               })}
@@ -173,6 +187,7 @@ export const UploadNote = ({ navigation }) => {
               selectedValue={grade}
               onValueChange={(itemValue, itemIndex) => setGrade(itemValue)}
             >
+              <Picker.Item label='Select the Grade' />
               <Picker.Item label='12 Grade' value={12} />
               <Picker.Item label='13 Grade' value={13} />
             </Picker>

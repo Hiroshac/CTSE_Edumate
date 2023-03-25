@@ -1,25 +1,38 @@
-import axios from 'axios';
 import { StatusBar } from 'expo-status-bar'
+import { addDoc, collection, setDoc } from 'firebase/firestore';
 import React, { useState } from 'react'
+import { db } from '../../../core/config';
 import { ButtonText, PageTitle, StyledButton, StyledContainer, StyledInputLabel, StyledTextInput } from '../../constants/styles'
 
 export const StudentFeedback = ({navigation,route}) => {
 
   const getname = route.params
   const subjectname = getname.name
+  const sid = getname.id
 
-  const [subject, setSubject] = useState();
+  // const [subject, setSubject] = useState();
   const [Comment, setComment] = useState();
 
-  const data = { subjectname, Comment };
+  // const data = { subject, Comment };
 
-  const onChangeHandler = () => {
-    const url = `https://edumate-backend.herokuapp.com/subjectfeedback/add`;
-    axios.post(url, data).then((res) => {
-      alert("comment added");
-      navigation.navigate("SSubject")
+   const onChangeHandler = async() => {
+    await addDoc(collection(db,"feedback"),{
+      Comment:Comment,
+      subject:subjectname,
+      sid:sid
     });
+    console.log("Add");
+    navigation.navigate("Studentsubject",{ name: subjectname,id:id });
   };
+
+  // const onChangeHandler = async() => {
+  //   await addDoc((collection(db,'feedback'),{
+  //     comment:Comment,
+  //     subject:subject
+  //   }).then(()=>{
+  //     navigation.navigate("StudentDash");
+  //   }))
+  // };
 
   return (
     <StyledContainer>
@@ -28,7 +41,7 @@ export const StudentFeedback = ({navigation,route}) => {
         <StyledInputLabel>Subject</StyledInputLabel>
         <StyledTextInput
         value={subjectname}
-        // onChangeText={(subject) => setSubject(subject)}
+        // onChangeText={(subjectname) => setSubject(subjectname)}
         />
         <StyledInputLabel>FeedBack</StyledInputLabel>
         <StyledTextInput
