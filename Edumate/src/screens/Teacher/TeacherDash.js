@@ -57,11 +57,17 @@ import {
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { waitForPendingWrites } from 'firebase/firestore'
-
-const { brand, darkLight, primary } = colors;
-
-const API_URL =
-  Platform.OS === "ios" ? "http://localhost:5000" : "http://10.0.2.2:5000";
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  deleteDoc,
+  doc
+} from 'firebase/firestore'
+import { db } from '../../../core/config'
+import { getAuth, signOut } from 'firebase/auth'
+const { brand, darkLight, primary } = colors
 var userId = "";
 AsyncStorage.getItem("user").then((value) => {
   userId = value;
@@ -72,52 +78,117 @@ export const TeacherDash = ({ navigation }) => {
   const [link, setlink] = useState([])
   const [note, setNote] = useState([])
   const [refreshing, setRefreshing] = useState(true)
+  const auth = getAuth()
+  const [userId, setUserId] = useState(null)
+
+  const user = auth.currentUser
+  // console.log(user.uid)
+
+  useEffect(() => {
+    getUser
+  }, [])
+
+  const getUser = async () => {
+    try {
+      const user = await AsyncStorage.getItem('@user').then((value) => {
+        console.log(value)
+        setUserId(value)
+      })
+      console.log(user)
+    } catch (e) {
+      console.log('Fail to get user')
+    }
+  }
 
   const loadNotes = async () => {
-    const url = `https://edumate-backend.herokuapp.com/teacherNote/get/${userId}`;
-    await axios.get(url).then((res) => {
+    // const url = `https://edumate-backend.herokuapp.com/teacherNote/get/${userId}`;
+    // await axios.get(url).then((res) => {
+    //   setRefreshing(false)
+    //   setNote(res.data)
+    // })
+    const q = query(collection(db, 'notes'), orderBy('created', 'desc'))
+    onSnapshot(q, (querySnapshot) => {
       setRefreshing(false)
-      setNote(res.data)
+      setNote(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
     })
   }
   const loadLinks = async () => {
-    const url = `https://edumate-backend.herokuapp.com/link`;
-    await axios.get(url).then((res) => {
-      setRefreshing(false)
-      setlink(res.data)
-    })
+    // const url = `https://edumate-backend.herokuapp.com/link`;
+    // await axios.get(url).then((res) => {
+    //   setRefreshing(false)
+    //   setlink(res.data)
+    // })
+     const q = query(collection(db, 'links'), orderBy('created', 'desc'))
+     onSnapshot(q, (querySnapshot) => {
+       setRefreshing(false)
+       setlink(
+         querySnapshot.docs.map((doc) => ({
+           id: doc.id,
+           data: doc.data(),
+         }))
+       )
+     })
+
   }
   useEffect(() => {
-    loadLinks();
-  }, []);
+    loadLinks()
+  }, [])
 
   useEffect(() => {
-    loadNotes();
-  }, []);
+    loadNotes()
+  }, [])
 
   const deleteNote = (id) => {
-    axios
-      .delete(`https://edumate-backend.herokuapp.com/teacherNote/${id}`)
-      .then(() => {
-        alert('deleted ')
-        navigation.navigate('TeacherDash')
-      })
+    // axios
+    //   .delete(`https://edumate-backend.herokuapp.com/teacherNote/${id}`)
+    //   .then(() => {
+    //     alert('deleted ')
+    //     navigation.navigate('TeacherDash')
+    //   })
+     const linkDocRef = doc(db, 'notes', id)
+     try {
+       deleteDoc(linkDocRef)
+       alert('deleted')
+     } catch (err) {
+       alert(err)
+     }
   }
 
   const deleteLink = (id) => {
-    axios
-      .delete(`https://edumate-backend.herokuapp.com/link/${id}`)
-      .then(() => {
-        alert('deleted ')
-      })
+    // console.log(id)
+    // axios
+    //   .delete(`https://edumate-backend.herokuapp.com/link/${id}`)
+    //   .then(() => {
+    //     alert('deleted ')
+    //   })
+    const linkDocRef = doc(db, 'links', id)
+    try {
+       deleteDoc(linkDocRef)
+      alert('deleted')
+    } catch (err) {
+      alert(err)
+    
+    }
   }
-
   const Logout = async () => {
-    await AsyncStorage.setItem('user', '')
-    await AsyncStorage.removeItem('user')
+    await AsyncStorage.setItem('@user', '')
+    await AsyncStorage.removeItem('@user')
     await AsyncStorage.removeItem('file')
     await AsyncStorage.clear()
-    navigation.navigate('Login')
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        navigation.navigate('Login')
+      })
+      .catch((error) => {
+        // An error happened.
+        console.log(error)
+      })
   }
 
   const navigationView = () => (
@@ -125,7 +196,7 @@ export const TeacherDash = ({ navigation }) => {
       <View style={styles.row}>
         <View>
           <Image
-            source={require("../../../assets/Picture1.png")}
+            source={require('../../../assets/Picture1.png')}
             style={styles.drawerImage}
           />
         </View>
@@ -179,20 +250,20 @@ export const TeacherDash = ({ navigation }) => {
     <DrawerLayoutAndroid
       ref={drawer}
       drawerWidth={300}
-      drawerPosition={"right"}
+      drawerPosition={'right'}
       renderNavigationView={navigationView}
     >
       <StyledContainerDash>
-        <StatusBar style="dark" />
+        <StatusBar style='dark' />
         <View>
           <PageTitle>Discover</PageTitle>
           <DrawerIcon>
             <TouchableOpacity
-              title="Open drawer"
+              title='Open drawer'
               onPress={() => drawer.current.openDrawer()}
             >
               <View>
-                <Octicons size={20} color={darkLight} name="three-bars" />
+                <Octicons size={20} color={darkLight} name='three-bars' />
               </View>
             </TouchableOpacity>
           </DrawerIcon>
@@ -202,7 +273,7 @@ export const TeacherDash = ({ navigation }) => {
             <DiscoverTitle>
               <DiscoverText> Notes</DiscoverText>
               <DashButton>
-                <Octicons size={30} color={primary} name="chevron-down" />
+                <Octicons size={30} color={primary} name='chevron-down' />
               </DashButton>
             </DiscoverTitle>
             <ScrollView
@@ -212,41 +283,41 @@ export const TeacherDash = ({ navigation }) => {
             >
               {note.map((notes) => {
                 return (
-                  <TeacherCard key={notes._id}>
+                  <TeacherCard key={notes.id}>
                     <TeacherCardRow>
                       <TeacherCardColumn>
                         <TeacherDashContent>
-                          subect : {notes.subject}
+                          subect : {notes.data.subject}
                         </TeacherDashContent>
                         <TeacherDashContent>
-                          Lesson : {notes.lesson_name}
+                          Lesson : {notes.data.lesson_name}
                         </TeacherDashContent>
                         <TeacherDashContent>
-                          grade : {notes.grade}
+                          grade : {notes.data.grade}
                         </TeacherDashContent>
                         <TeacherDashContent>
                           <Text
                             style={{ color: 'blue' }}
-                            onPress={() => Linking.openURL(notes.note)}
+                            onPress={() => Linking.openURL(notes.data.note)}
                           >
                             Note
                           </Text>
                         </TeacherDashContent>
                       </TeacherCardColumn>
                       <TeacherCardColumn>
-                        <TeacherDashContentButton
+                        {/* <TeacherDashContentButton
                           onPress={() => {
                             navigation.navigate('Comments', {
-                              id: notes._id,
+                              id: notes.data.id,
                             })
                           }}
                         >
                           <Octicons
                             size={20}
                             color={darkLight}
-                            name="comment"
+                            name='comment'
                           />
-                        </TeacherDashContentButton>
+                        </TeacherDashContentButton> */}
                         <TeacherDashContentButton
                           onPress={() => {
                             navigation.navigate('UpdateNote', {
@@ -254,26 +325,26 @@ export const TeacherDash = ({ navigation }) => {
                             })
                           }}
                         >
-                          <Octicons size={20} color={darkLight} name="pencil" />
+                          <Octicons size={20} color={darkLight} name='pencil' />
                         </TeacherDashContentButton>
                         <TeacherDashContentButton
                           onPress={() => {
-                            deleteNote(notes._id)
+                            deleteNote(notes.id)
                           }}
                         >
-                          <Octicons size={20} color={darkLight} name="trash" />
+                          <Octicons size={20} color={darkLight} name='trash' />
                         </TeacherDashContentButton>
                       </TeacherCardColumn>
                     </TeacherCardRow>
                   </TeacherCard>
-                );
+                )
               })}
             </ScrollView>
 
             <DiscoverTitle>
               <DiscoverText> Links</DiscoverText>
               <DashButton>
-                <Octicons size={30} color={primary} name="chevron-down" />
+                <Octicons size={30} color={primary} name='chevron-down' />
               </DashButton>
             </DiscoverTitle>
             <ScrollView
@@ -284,58 +355,58 @@ export const TeacherDash = ({ navigation }) => {
               {link.map((links) => {
                 return (
                   <>
-                    <TeacherCard key={links._id}>
+                    <TeacherCard key={links.id}>
                       <TeacherCardRow>
                         <TeacherCardColumn>
                           <TeacherDashContent>
-                            subject : {links.subject}
+                            subject : {links.data.subject}
                           </TeacherDashContent>
                           <TeacherDashContent>
-                            lesson : {links.lesson_name}
+                            lesson : {links.data.lesson_name}
                           </TeacherDashContent>
                           <TeacherDashContent>
-                            grade : {links.grade}
+                            grade : {links.data.grade}
                           </TeacherDashContent>
                           <TeacherDashContent>
-                            date : {links.date}
+                            date : {links.data.date}
                           </TeacherDashContent>
                           <TeacherDashContent>
-                            time : {links.time}
+                            time : {links.data.time}
                           </TeacherDashContent>
                           <TeacherDashContent>
-                            link :{links.link}
+                            link :{links.data.link}
                           </TeacherDashContent>
                         </TeacherCardColumn>
                         <TeacherCardColumn>
                           <TeacherDashContentButton
                             onPress={() => {
-                              navigation.navigate("UpdateLink", {
-                                id: links._id,
-                              });
+                              navigation.navigate('UpdateLink', {
+                                id: links.id,
+                              })
                             }}
                           >
                             <Octicons
                               size={20}
                               color={darkLight}
-                              name="pencil"
+                              name='pencil'
                             />
                           </TeacherDashContentButton>
                           <TeacherDashContentButton
                             onPress={() => {
-                              deleteLink(links._id);
+                              deleteLink(links.id)
                             }}
                           >
                             <Octicons
                               size={20}
                               color={darkLight}
-                              name="trash"
+                              name='trash'
                             />
                           </TeacherDashContentButton>
                         </TeacherCardColumn>
                       </TeacherCardRow>
                     </TeacherCard>
                   </>
-                );
+                )
               })}
             </ScrollView>
 
@@ -344,8 +415,8 @@ export const TeacherDash = ({ navigation }) => {
         </InnerContainer>
       </StyledContainerDash>
     </DrawerLayoutAndroid>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -354,7 +425,7 @@ const styles = StyleSheet.create({
     paddingTop: 15,
   },
   navigationContainer: {
-    backgroundColor: "#ecf0f1",
+    backgroundColor: '#ecf0f1',
   },
   paragraph: {
     paddingLeft: 10,
@@ -363,7 +434,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
   },
   row: {
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingTop: 20,
   },
   rowInside: {
@@ -372,9 +443,9 @@ const styles = StyleSheet.create({
   drawerImage: {
     height: 45,
     width: 60,
-    resizeMode: "stretch",
+    resizeMode: 'stretch',
   },
   btnLogout: {
-    backgroundColor: "#E14545",
+    backgroundColor: '#E14545',
   },
-});
+})

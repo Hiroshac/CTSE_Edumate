@@ -18,7 +18,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-
+import { getAuth, signOut } from 'firebase/auth'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../core/config";
@@ -30,11 +30,17 @@ AsyncStorage.getItem("user").then((value) => {
   userId = value;
 });
 
+
+
 export const StudentDash = ({ navigation }) => {
   const drawer = useRef(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [stream, setStream] = useState("");
+  const [uid, setUid] = useState("");
+
+  const user = auth.currentUser
+  setUid(user.uid);
 
   useEffect(() => {
     loadData();

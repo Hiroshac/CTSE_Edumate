@@ -39,11 +39,13 @@ import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
 import { async } from '@firebase/util'
+import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
 
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
+// const API_URL =
+//   Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
 export const PaperMarking = ({ route, navigation }) => {
   const [paper, setPaper] = useState([])
@@ -59,10 +61,14 @@ export const PaperMarking = ({ route, navigation }) => {
   // const id = '636cbe0453ef6c69dc31e041'
 
   const loadMark = async () => {
-    const url = `https://edumate-backend.herokuapp.com/StudentAnswers/get/${id}}`
-    axios.get(url).then((res) => {
-      setPaper(res.data)
-    })
+    // const url = `https://edumate-backend.herokuapp.com/StudentAnswers/get/${id}}`
+    // axios.get(url).then((res) => {
+    //   setPaper(res.data)
+    // })
+    const q = doc(db, 'answer', id)
+    const docSnap = await getDoc(q)
+    console.log(docSnap.data())
+    setPaper(docSnap.data())
   }
 
   useEffect(() => {
@@ -82,39 +88,53 @@ export const PaperMarking = ({ route, navigation }) => {
   //     status: event.target.value,
   //   }
 
-  //   axios.put(
-  //     `https://edumate-backend.herokuapp.com/StudentAnswers/${id}`,
-  //     data
-  //   )
+  // //   axios.put(
+  // //     `https://edumate-backend.herokuapp.com/StudentAnswers/${id}`,
+  // //     data
+  // //   )
   // }
 
-  const data = {
-    answer_id: id,
-    subject: paper.subject,
-    grade: paper.grade,
-    student_id: paper.student_id,
-    mark,
-    comment,
-    markedBy: '636cbe0453ef6c69dc31e041',
-  }
+  // const data = {
+  //   answer_id: id,
+  //   subject: paper.subject,
+  //   grade: paper.grade,
+  //   student_id: paper.student_id,
+  //   mark,
+  //   comment,
+  //   markedBy: '636cbe0453ef6c69dc31e041',
+  // }
 
   const addMarks = async () => {
-   
     if (status !== 'Marked') {
       alert('Something went wrong!')
     } else if (mark > 100 || mark < 0) {
       alert('please enter number between 0 and 100')
-    } else if(  
-    mark==''||
-    comment==''
-    ){
+    } else if (mark == '' || comment == '') {
       alert('please fill the given fields')
-    }
-    
-    else {
-      await axios.post('https://edumate-backend.herokuapp.com/mark/add/', data)
-      // alert('succesfully marked')
-      alert('Marks added')
+    } else {
+      // await axios.post('https://edumate-backend.herokuapp.com/mark/add/', data)
+      // // alert('succesfully marked')
+      // alert('Marks added')
+      // navigation.navigate('Answer')
+      const linkDocRef = doc(db, 'answer', id)
+      await updateDoc(linkDocRef, {
+        subjectname: paper.subjectname,
+        lname: paper.lname,
+        grade: paper.grade,
+        url: paper.url,
+        username: paper.username,
+        status: status,
+      })
+      addDoc(collection(db, 'marks'), {
+        answer_id: id,
+        subject: paper.subjectname,
+        grade: paper.grade,
+        student_id: paper.username,
+        mark,
+        comment,
+        markedBy: 'nipun senarth',
+      })
+      alert('Mark added')
       navigation.navigate('Answer')
     }
   }

@@ -53,11 +53,11 @@ import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 
 const { brand, darkLight, primary } = colors
 
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
+// const API_URL =
+//   Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
-export const Comment = ({ route, navigation }) => {
-  const [comment, setComment] = useState([])
+export const Feedback = ({ route, navigation }) => {
+  const [feedback, setFeedback] = useState([])
   const [note, setNote] = useState()
   const [teacher_id, setTeacher] = useState('')
 
@@ -66,24 +66,17 @@ export const Comment = ({ route, navigation }) => {
 
   const { id } = route.params
 
-  const getLink = () => {
-    axios
-      .get(`https://edumate-backend.herokuapp.com/comment/get/${id}`)
-      .then((res) => {
-        setComment(res.data)
-      })
+  const getFeedback = () => {
+    // axios
+    //   .get(`https://edumate-backend.herokuapp.com/comment/get/${id}`)
+    //   .then((res) => {
+    //     setComment(res.data)
+    //   })
+
   }
 
-  const getNote = () => {
-    axios
-      .get(`https://edumate-backend.herokuapp.com/teacherNote/${id}`)
-      .then((res) => {
-        setNote(res.data.note)
-      })
-  }
   useEffect(() => {
-    getLink()
-    getNote()
+    getFeedback()
   }, [])
 
   return (
@@ -93,7 +86,7 @@ export const Comment = ({ route, navigation }) => {
       <InnerContainer>
         <View>
           <ScrollView>
-            {comment.map((data) => {
+            {feedback.map((data) => {
               return (
                 <>
                   <TeacherCard key={data._id}>
