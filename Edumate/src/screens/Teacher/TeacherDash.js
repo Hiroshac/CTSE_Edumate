@@ -57,13 +57,24 @@ import {
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { waitForPendingWrites } from 'firebase/firestore'
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore'
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  deleteDoc,
+  doc
+} from 'firebase/firestore'
 import { db } from '../../../core/config'
 import { getAuth, signOut } from 'firebase/auth'
 const { brand, darkLight, primary } = colors
 
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
+// const API_URL =
+//   Platform.OS === "ios" ? "http://localhost:5000" : "http://10.0.2.2:5000";
+var userId = "";
+AsyncStorage.getItem("user").then((value) => {
+  userId = value;
+});
 
 export const TeacherDash = ({ navigation }) => {
   const drawer = useRef(null)
@@ -115,16 +126,17 @@ export const TeacherDash = ({ navigation }) => {
     //   setRefreshing(false)
     //   setlink(res.data)
     // })
-    const q = query(collection(db, 'notes'), orderBy('created', 'desc'))
-    onSnapshot(q, (querySnapshot) => {
-      setRefreshing(false)
-      setlink(
-        querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }))
-      )
-    })
+     const q = query(collection(db, 'links'), orderBy('created', 'desc'))
+     onSnapshot(q, (querySnapshot) => {
+       setRefreshing(false)
+       setlink(
+         querySnapshot.docs.map((doc) => ({
+           id: doc.id,
+           data: doc.data(),
+         }))
+       )
+     })
+
   }
   useEffect(() => {
     loadLinks()
@@ -135,22 +147,37 @@ export const TeacherDash = ({ navigation }) => {
   }, [])
 
   const deleteNote = (id) => {
-    axios
-      .delete(`https://edumate-backend.herokuapp.com/teacherNote/${id}`)
-      .then(() => {
-        alert('deleted ')
-        navigation.navigate('TeacherDash')
-      })
+    // axios
+    //   .delete(`https://edumate-backend.herokuapp.com/teacherNote/${id}`)
+    //   .then(() => {
+    //     alert('deleted ')
+    //     navigation.navigate('TeacherDash')
+    //   })
+     const linkDocRef = doc(db, 'notes', id)
+     try {
+       deleteDoc(linkDocRef)
+       alert('deleted')
+     } catch (err) {
+       alert(err)
+     }
   }
 
   const deleteLink = (id) => {
-    axios
-      .delete(`https://edumate-backend.herokuapp.com/link/${id}`)
-      .then(() => {
-        alert('deleted ')
-      })
+    // console.log(id)
+    // axios
+    //   .delete(`https://edumate-backend.herokuapp.com/link/${id}`)
+    //   .then(() => {
+    //     alert('deleted ')
+    //   })
+    const linkDocRef = doc(db, 'links', id)
+    try {
+       deleteDoc(linkDocRef)
+      alert('deleted')
+    } catch (err) {
+      alert(err)
+    
+    }
   }
-
   const Logout = async () => {
     await AsyncStorage.setItem('@user', '')
     await AsyncStorage.removeItem('@user')
@@ -259,7 +286,7 @@ export const TeacherDash = ({ navigation }) => {
             >
               {note.map((notes) => {
                 return (
-                  <TeacherCard key={notes.data.id}>
+                  <TeacherCard key={notes.id}>
                     <TeacherCardRow>
                       <TeacherCardColumn>
                         <TeacherDashContent>
@@ -281,7 +308,7 @@ export const TeacherDash = ({ navigation }) => {
                         </TeacherDashContent>
                       </TeacherCardColumn>
                       <TeacherCardColumn>
-                        <TeacherDashContentButton
+                        {/* <TeacherDashContentButton
                           onPress={() => {
                             navigation.navigate('Comments', {
                               id: notes.data.id,
@@ -293,7 +320,7 @@ export const TeacherDash = ({ navigation }) => {
                             color={darkLight}
                             name='comment'
                           />
-                        </TeacherDashContentButton>
+                        </TeacherDashContentButton> */}
                         <TeacherDashContentButton
                           onPress={() => {
                             navigation.navigate('UpdateNote', {
@@ -305,7 +332,7 @@ export const TeacherDash = ({ navigation }) => {
                         </TeacherDashContentButton>
                         <TeacherDashContentButton
                           onPress={() => {
-                            deleteNote(notes.data.id)
+                            deleteNote(notes.id)
                           }}
                         >
                           <Octicons size={20} color={darkLight} name='trash' />
@@ -331,7 +358,7 @@ export const TeacherDash = ({ navigation }) => {
               {link.map((links) => {
                 return (
                   <>
-                    <TeacherCard key={links.data.id}>
+                    <TeacherCard key={links.id}>
                       <TeacherCardRow>
                         <TeacherCardColumn>
                           <TeacherDashContent>
@@ -357,7 +384,7 @@ export const TeacherDash = ({ navigation }) => {
                           <TeacherDashContentButton
                             onPress={() => {
                               navigation.navigate('UpdateLink', {
-                                id: links.data.id,
+                                id: links.id,
                               })
                             }}
                           >
@@ -369,7 +396,7 @@ export const TeacherDash = ({ navigation }) => {
                           </TeacherDashContentButton>
                           <TeacherDashContentButton
                             onPress={() => {
-                              deleteLink(links.data.id)
+                              deleteLink(links.id)
                             }}
                           >
                             <Octicons
