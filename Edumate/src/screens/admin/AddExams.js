@@ -9,7 +9,6 @@ import {
   TextInput,
   Platform,
 } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -24,6 +23,8 @@ import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
+import { addDoc, collection, doc, onSnapshot, query } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
 
@@ -50,49 +51,24 @@ export const AddExams = ({navigation}) => {
   
     var endtime = validateDate1.toLocaleTimeString('en-GB')
 
-      
-    const formData = 
-    {
-       day:begin,
-       start: begint ,
-       end: endtime,
-       stream,
-       subject,
-       grade
+    const onChangeHandler = async() => {
+      await addDoc(collection(db,"exam"),{
+        begin:begin,
+        begint:begint,
+        endtime: endtime,
+        stream:stream,
+        subject:subject,
+        grade:grade
     }
-
-    const onChangeHandler = () => {
-      const url = `https://edumate-backend.herokuapp.com/examtime/add`
-      axios.post(url, formData).then((res) => {
-        console.log('done')
-        alert('Exam added')
-        navigation.navigate('getexams');
-      })
-    }
+    );
+    alert("Exam Added!")
+    navigation.navigate("getexams")
+  }
    
     const getMessage = () => {
       const status = isError ? `Error: ` : `Success: `
       return status + message
     }
-
-    const loadStreams = async () => {
-      const url = `https://edumate-backend.herokuapp.com/stream/`
-      await axios.get(url).then((res) => {
-          setStreams(res.data)
-      })
-    }
-
-    const loadSubjects = async () => {
-      const url = `https://edumate-backend.herokuapp.com/subject/`
-      await axios.get(url).then((res) => {
-          setSubjects(res.data)
-      })
-    }
-  
-    useEffect(() => {
-      loadStreams()
-      loadSubjects()
-    })
 
     const onChange = (event, selectedDate) => {
       const currentDate = selectedDate
@@ -127,6 +103,37 @@ export const AddExams = ({navigation}) => {
     const showTimepicker = () => {
       showMode('time')
     }
+
+    const loadStreams = async () => {
+      const q = query(
+      collection(db,'stream'),
+  );
+        onSnapshot(q,(snapshot)=>{
+          setStreams(snapshot.docs.map(doc=>({
+    
+      id:doc.id,
+      data:doc.data()
+    })))
+  })
+  };
+
+  const loadSubjects = async () => {
+    const q = query(
+    collection(db,'subject'),
+);
+      onSnapshot(q,(snapshot)=>{
+        setSubjects(snapshot.docs.map(doc=>({
+  
+    id:doc.id,
+    data:doc.data()
+  })))
+})
+};
+
+  useEffect(() => {
+    loadStreams()
+    loadSubjects()
+  },[])
   
   
     return (
@@ -154,21 +161,44 @@ export const AddExams = ({navigation}) => {
               command={showTimepicker}
               value={day1.toLocaleTimeString()}
             />
-             <InputCd
-              placeholder='Stream'
-              value={stream}
-              placeholderTextColor={darkLight}
-              // onChangeText={(time) => setTime(time)}
-              onChangeText={(stream) => setStream(stream)}
-            />
-             <InputCd
-              placeholder='Subject'
-              value={subject}
-              placeholderTextColor={darkLight}
-              // onChangeText={(time) => setTime(time)}
-              onChangeText={(subject) => setSubject(subject)}
-            />
-
+            <View style={styles.Picker}>
+              <Picker
+                    selectedValue={stream}
+                    onValueChange={(itemValue, itemIndex) =>
+                    setStream(itemValue)
+                    }
+                    >
+                    <Picker.Item label='Choose Stream' />
+                    {streams.map((sub) => {
+                    return (
+                          <Picker.Item
+                            id={sub.id}
+                            label={sub.data.streamname}
+                            value={sub.data.streamname}
+                            />
+                          )
+                          })}
+                  </Picker>
+            </View>
+            <View style={styles.Picker}>
+            <Picker
+                    selectedValue={subject}
+                    onValueChange={(itemValue, itemIndex) =>
+                    setSubject(itemValue)
+                    }
+                    >
+                    <Picker.Item label='Choose Subject' />
+                    {subjects.map((sub) => {
+                    return (
+                          <Picker.Item
+                            id={sub.id}
+                            label={sub.data.subjectname}
+                            value={sub.data.subjectname}
+                            />
+                          )
+                          })}
+                  </Picker>
+            </View>
             <Picker
               placeholder='Grade'
               selectedValue={grade}

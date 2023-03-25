@@ -41,11 +41,10 @@ import { Picker } from '@react-native-picker/picker'
 import { async } from '@firebase/util'
 import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../../../core/config'
+import { getAuth } from 'firebase/auth'
 
 const { brand, darkLight, primary } = colors
 
-// const API_URL =
-//   Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
 export const PaperMarking = ({ route, navigation }) => {
   const [paper, setPaper] = useState([])
@@ -57,14 +56,11 @@ export const PaperMarking = ({ route, navigation }) => {
   const [message, setMessage] = useState('')
   const [selectedLanguage, setSelectedLanguage] = useState([])
   const { id } = route.params
-
+    const auth = getAuth()
+    const user = auth.currentUser
   // const id = '636cbe0453ef6c69dc31e041'
 
   const loadMark = async () => {
-    // const url = `https://edumate-backend.herokuapp.com/StudentAnswers/get/${id}}`
-    // axios.get(url).then((res) => {
-    //   setPaper(res.data)
-    // })
     const q = doc(db, 'answer', id)
     const docSnap = await getDoc(q)
     console.log(docSnap.data())
@@ -88,10 +84,6 @@ export const PaperMarking = ({ route, navigation }) => {
   //     status: event.target.value,
   //   }
 
-  // //   axios.put(
-  // //     `https://edumate-backend.herokuapp.com/StudentAnswers/${id}`,
-  // //     data
-  // //   )
   // }
 
   // const data = {
@@ -112,10 +104,6 @@ export const PaperMarking = ({ route, navigation }) => {
     } else if (mark == '' || comment == '') {
       alert('please fill the given fields')
     } else {
-      // await axios.post('https://edumate-backend.herokuapp.com/mark/add/', data)
-      // // alert('succesfully marked')
-      // alert('Marks added')
-      // navigation.navigate('Answer')
       const linkDocRef = doc(db, 'answer', id)
       await updateDoc(linkDocRef, {
         subjectname: paper.subjectname,
@@ -132,7 +120,8 @@ export const PaperMarking = ({ route, navigation }) => {
         student_id: paper.username,
         mark,
         comment,
-        markedBy: 'nipun senarth',
+        markedBy: user.email,
+        userId:user.uid
       })
       alert('Mark added')
       navigation.navigate('Answer')

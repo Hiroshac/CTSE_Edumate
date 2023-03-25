@@ -22,7 +22,7 @@ export const StudentFeedback = ({navigation,route}) => {
       sid:sid
     });
     console.log("Add");
-    navigation.navigate("Studentsubject",{ name: subjectname,id:id });
+    navigation.navigate("Studentsubject",{ name: subjectname,id:sid });
   };
 
   // const onChangeHandler = async() => {

@@ -11,7 +11,6 @@ import {
   SafeAreaView,
   RefreshControl,
 } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -24,7 +23,6 @@ import {
   colors,
   DrawerBtn,
   TeacherCardColumn,
-  TeacherDashContentButton,
   TeacherCardRow,
   AdminContainer,
   StreamCard,
@@ -32,15 +30,16 @@ import {
   LogoutBtn,
   DrawerIcon,
   AdminCard,
+  AdminContentButton,
+  AdminCardRow,
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { DrawerLayoutAndroid, StyleSheet } from 'react-native'
+import { collection, deleteDoc, doc, onSnapshot, query } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
-
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -56,22 +55,27 @@ export const Subjects = ({ navigation }) => {
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState('')
 
-  const deleteSubject = (id) => {
-    axios
-      .delete(`https://edumate-backend.herokuapp.com/subject/${id}`)
-      .then((res) => {
-        alert('Successfully deleted')
-        loadDate()
-      })
-  }
+  const loadData = async () => {
+      const q = query(
+      collection(db,'subject'),
+   );
+        onSnapshot(q,(snapshot)=>{
+        setSubjects(snapshot.docs.map(doc=>({
+    
+      id:doc.id,
+      data:doc.data()
+    })))
+   })
+   };
 
-  const loadDate = () => {
-    const url = `https://edumate-backend.herokuapp.com/subject/`
-    axios.get(url).then((res) => {
-      setRefreshing(false)
-      setSubjects(res.data)
-    })
-  }
+   const deleteSubject = async (subjectId) => {
+    try {
+      await deleteDoc(doc(db, 'subject', subjectId));
+      alert("Subject Deleted!")
+    } catch (error) {
+      console.error('Error deleting subject: ', error);
+    }
+  };
 
   const Logout = () => {
     AsyncStorage.removeItem('user')
@@ -79,7 +83,7 @@ export const Subjects = ({ navigation }) => {
   }
   
   useEffect(() => {
-    loadDate()
+    loadData()
   }, [])
 
   const navigationView = () => (
@@ -148,23 +152,23 @@ export const Subjects = ({ navigation }) => {
           <View>
             <ScrollView
              refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={loadDate} />
+              <RefreshControl refreshing={refreshing} onRefresh={loadData} />
             }
             >
               {subjects.map((e) => {
                 return (
                   <>
                     <AdminCard id={e._id}>
-                      <TeacherCardRow>
+                      <AdminCardRow>
                         <TeacherCardColumn>
-                          <AdminContent>Stream : {e.streamname}</AdminContent>
-                          <AdminContent>Subject : {e.subjectname}</AdminContent>
+                          <AdminContent>Stream : {e.data.streamname}</AdminContent>
+                          <AdminContent>Subject : {e.data.subjectname}</AdminContent>
                         </TeacherCardColumn>
                         <TeacherCardColumn>
-                          <TeacherDashContentButton
+                          <AdminContentButton
                             onPress={() => {
                               navigation.navigate('UpdateSubject', {
-                                id: e._id,
+                                id: e.id,
                               })
                             }}
                           >
@@ -173,10 +177,10 @@ export const Subjects = ({ navigation }) => {
                               color={darkLight}
                               name='pencil'
                             />
-                          </TeacherDashContentButton>
-                          <TeacherDashContentButton
+                          </AdminContentButton>
+                          <AdminContentButton
                             onPress={() => {
-                              deleteSubject(e._id)
+                              deleteSubject(e.id)
                             }}
                           >
                             <Octicons
@@ -184,9 +188,9 @@ export const Subjects = ({ navigation }) => {
                               color={darkLight}
                               name='trash'
                             />
-                          </TeacherDashContentButton>
+                          </AdminContentButton>
                         </TeacherCardColumn>
-                      </TeacherCardRow>
+                      </AdminCardRow>
                     </AdminCard>
                   </>
                 )

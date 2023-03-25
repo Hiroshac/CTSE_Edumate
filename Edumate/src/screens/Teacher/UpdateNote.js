@@ -110,6 +110,7 @@ export const UpdateNote = ({ route, navigation }) => {
     setLesson(docSnap.data().lesson_name)
     setGrade(docSnap.data().grade)
     setNote(docSnap.data().note)
+    setTeacher(docSnap.data().teacher_id)
   }
 
   useEffect(() => {
@@ -125,11 +126,6 @@ export const UpdateNote = ({ route, navigation }) => {
       note: file,
       teacher_id,
     }
-    // const url = `https://edumate-backend.herokuapp.com/teacherNote/${id}`
-    // axios.put(url, data).then((res) => {
-    //   alert('Note updated')
-    //   navigation.navigate('TeacherDash')
-    // })
      const linkDocRef = doc(db, 'notes', id)
     await updateDoc(linkDocRef, 
      {subject,
@@ -145,7 +141,7 @@ export const UpdateNote = ({ route, navigation }) => {
   return (
     <StyledContainer>
       <StatusBar style='dark' />
-      <PageTitle>Upload Note</PageTitle>
+      <PageTitle>Update Note</PageTitle>
       <InnerContainer>
         <View>
           <View>
@@ -178,7 +174,7 @@ export const UpdateNote = ({ route, navigation }) => {
               </UploadingButton>
             </UploadButton>
             <StyledButton onPress={onChangeHandler}>
-              <ButtonText>Upload</ButtonText>
+              <ButtonText>Update</ButtonText>
             </StyledButton>
           </View>
         </View>

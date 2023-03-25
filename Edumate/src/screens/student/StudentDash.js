@@ -25,10 +25,11 @@ import { db } from "../../../core/config";
 
 const { brand, darkLight, primary } = colors;
 
-var id = "MdaHUyN5DV2gCB8E3rgB";
-AsyncStorage.getItem("user").then((value) => {
-  userId = value;
-});
+// var id = "MdaHUyN5DV2gCB8E3rgB";
+// AsyncStorage.getItem("user").then((value) => {
+//  var userId = value;
+//  console.log(userId);
+// });
 
 
 
@@ -37,62 +38,103 @@ export const StudentDash = ({ navigation }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [stream, setStream] = useState("");
-  const [uid, setUid] = useState("");
+  const [uid, setUid] = useState();
+  const [id, setId] = useState('');
+  const [userDetails, setUserDetails] = useState([]);
+  const auth = getAuth()
 
-  const user = auth.currentUser
-  setUid(user.uid);
+  const user = auth.currentUser;
+  // setId(user.uid);
+  // console.log(user.uid);
+  const getUser = async () => {
+    try {
+    const user = await AsyncStorage.getItem('@user').then(async (value) => {
+    setId(value)
+     const q = doc(db, 'user', value)
+     const docSnap = await getDoc(q)
+    const res = docSnap.data()
+    const name = res.firstName + ' ' + res.lastName
+     setName(name)
+     setEmail(res.email)
+     setStream(res.stream)
+      setDob(res.dateOfBirth)
+     setRole(res.type)
+     setStream(res.stream)
+     setRefreshing(false)
+    })
+     } catch (e) {
+    console.log('Fail to get user')
+    }
+     }
 
   useEffect(() => {
-    loadData();
+    getUser();
+    // loadData();
+    // userNavigation();
   }, []);
-  const loadData = async () => {
-    const q = doc(db,'user',id);
-    const docref = await getDoc(q);
-    console.log(docref.data());
-    setName(docref.data().firstName);
-    setEmail(docref.data().email);
-    setStream(docref.data().stream);
-  };
+  // const loadData = async () => {
+  //   const q = doc(db,'user',userId);
+  //   const docref = await getDoc(q);
+  //   // console.log(docref.data());
+  //   setName(docref.data().firstName);
+  //   setEmail(docref.data().email);
+  //   setStream(docref.data().stream);
+  // };
 
+  // const userNavigation = async (id) => {
+  //   const userRef = query(collection(db, 'user'))
+  //   const qm = query(userRef, where('uid', '==', user.uid))
+  //   onSnapshot(qm, (querySnapshot) => {
+  //     setUserDetails(
+  //       querySnapshot.docs.map((doc) => ({
+  //         id: doc.id,
+  //         // data: doc.data(),
+  //       }))
+  //     )
+  //   })
+  // }
+  // console.log(userDetails);
   const Logout = () => {
     AsyncStorage.removeItem("user");
+    signOut(auth);
     navigation.navigate("Login");
   };
 
   const navigationView = () => (
     <View style={[styles.container, styles.navigationContainer]}>
-      <View style={styles.row}>
-        <View>
-          <Image
-            source={require("../../../assets/Picture1.png")}
-            style={styles.drawerImage}
-          />
-        </View>
-        <View style={styles.rowInside}>
-          <Text style={styles.paragraph}>Edumate</Text>
-        </View>
+    <View style={styles.row}>
+      <View>
+        <Image
+          source={require("../../../assets/Picture1.png")}
+          style={styles.drawerImage}
+        />
       </View>
-      <DrawerBtn
-        onPress={() => {
-          navigation.navigate("StudentDash");
-        }}
-      >
-        <Text>User Profile</Text>
-      </DrawerBtn>
-      <LogoutBtn onPress={Logout}>
-        <ButtonText>Logout</ButtonText>
-      </LogoutBtn>
+      <View style={styles.rowInside}>
+        <Text style={styles.paragraph}>Edumate</Text>
+      </View>
     </View>
+    <DrawerBtn
+      onPress={() => {
+        navigation.navigate("User");
+      }}
+    >
+      <Text>User Profile</Text>
+    </DrawerBtn>
+    <LogoutBtn onPress={Logout}>
+      <ButtonText>Logout</ButtonText>
+    </LogoutBtn>
+  </View>
   );
 
   return (
     <DrawerLayoutAndroid
-      ref={drawer}
-      drawerWidth={300}
-      drawerPosition={"right"}
-      renderNavigationView={navigationView}
+    ref={drawer}
+    drawerWidth={300}
+    drawerPosition={'right'}
+    renderNavigationView={navigationView}
     >
-        <View>
+      <StyledContainer>
+        <View style={{marginBottom:50}}>
           <DrawerIcon>
             <TouchableOpacity
               title="Open drawer"
@@ -104,7 +146,6 @@ export const StudentDash = ({ navigation }) => {
             </TouchableOpacity>
           </DrawerIcon>
         </View>
-      <StyledContainer>
         <SBox>
           <Text style={styles.userl}>Name</Text>
           <Text  style={styles.userd}>{name}</Text>

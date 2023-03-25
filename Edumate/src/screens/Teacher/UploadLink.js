@@ -26,6 +26,8 @@ import {
   doc,
 } from 'firebase/firestore'
 import { db } from '../../../core/config.js'
+import { getAuth } from 'firebase/auth'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const { brand, darkLight, primary } = colors
 
@@ -38,12 +40,17 @@ export const UploadLink = ({ navigation }) => {
   const [time, setTime] = useState('')
   const [link, setLink] = useState('')
   const [teacher_id, setTeacher] = useState('')
-
+  const auth = getAuth()
+  const user = auth.currentUser
+  // console.log(user.uid)
   const validateDate = date
   var linkDate = validateDate.toLocaleDateString('en-GB')
 
   var linkTime = validateDate.toLocaleTimeString('en-GB')
-
+    var userId = ''
+    AsyncStorage.getItem('@user').then((value) => {
+      userId = value
+    })
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate
     setDate(currentDate)
@@ -65,17 +72,6 @@ export const UploadLink = ({ navigation }) => {
     showMode('time')
   }
 
-  // const data = {
-  //   subject: selectedSubject,
-  //   lesson_name,
-  //   grade,
-  //   date: linkDate,
-  //   time: linkTime,
-  //   link,
-  //   teacher_id: '515',
-  // }
-
-  const userStream = 'Science'
   const loadSubject = () => {
     const q = query(collection(db, 'stream'))
     onSnapshot(q, (querySnapshot) => {
@@ -97,13 +93,13 @@ export const UploadLink = ({ navigation }) => {
       alert('Please fill the given fields')
     } else {
       addDoc(collection(db, 'links'), {
-        subject: 'test',
+        subject: selectedSubject,
         lesson_name,
         grade,
         date: linkDate,
         time: linkTime,
         link,
-        teacher_id: '515',
+        teacher_id:userId,
         created: Timestamp.now(),
       })
       alert('Link added')
@@ -119,7 +115,7 @@ export const UploadLink = ({ navigation }) => {
         <View>
           <View>
             <Picker
-              selectedValue={subject}
+              selectedValue={selectedSubject}
               onValueChange={(itemValue, itemIndex) =>
                 setSelectedSubject(itemValue)
               }

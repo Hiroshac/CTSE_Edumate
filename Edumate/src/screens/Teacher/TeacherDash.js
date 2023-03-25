@@ -1,46 +1,21 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
-  ImageBackground,
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
-  Platform,
   ScrollView,
   DrawerLayoutAndroid,
-  Button,
   Image,
   Linking,
   RefreshControl,
 } from 'react-native'
-import axios from 'axios'
-import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
-  StyledContainer,
   InnerContainer,
-  PageLogo,
   PageTitle,
-  SubTitle,
-  StyledFormArea,
-  LeftIcon,
-  RightIcon,
-  StyledInputLabel,
-  StyledButton,
   ButtonText,
-  StyledTextInput,
   colors,
-  MsgBox,
-  Line,
-  ExtraView,
-  ExtraText,
-  TextLink,
-  TextLinkContent,
-  StyledButtoWhite,
-  ButtonTextWhite,
-  UploadButton,
-  UploadingButton,
   DiscoverTitle,
   DiscoverText,
   DashButton,
@@ -56,22 +31,11 @@ import {
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
-import { waitForPendingWrites } from 'firebase/firestore'
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-  deleteDoc,
-  doc
-} from 'firebase/firestore'
+import { deleteDoc, doc, waitForPendingWrites, where } from 'firebase/firestore'
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore'
 import { db } from '../../../core/config'
 import { getAuth, signOut } from 'firebase/auth'
 const { brand, darkLight, primary } = colors
-var userId = "";
-AsyncStorage.getItem("user").then((value) => {
-  userId = value;
-});
 
 export const TeacherDash = ({ navigation }) => {
   const drawer = useRef(null)
@@ -80,9 +44,9 @@ export const TeacherDash = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(true)
   const [userId, setUserId] = useState(null)
   const auth = getAuth()
+  const [userDetails, setUserDetails] = useState()
 
   const user = auth.currentUser
-  // console.log(user.uid)
 
   useEffect(() => {
     getUser()
@@ -96,15 +60,32 @@ export const TeacherDash = ({ navigation }) => {
     } catch (e) {
       console.log('Fail to get user')
     }
+    // try {
+    //   const user = await AsyncStorage.getItem('@user').then((value) => {
+    //     console.log(value)
+    //     setUserId(value)
+    //   })
+    //   console.log(user)
+    // } catch (e) {
+    //   console.log('Fail to get user')
+    // }
+    const userRef = query(collection(db, 'user'))
+    const qm = query(userRef, where('uid', '==', id))
+    onSnapshot(qm, (querySnapshot) => {
+      setUserDetails(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
+    })
   }
 
   const loadNotes = async () => {
-    // const url = `https://edumate-backend.herokuapp.com/teacherNote/get/${userId}`;
-    // await axios.get(url).then((res) => {
-    //   setRefreshing(false)
-    //   setNote(res.data)
-    // })
-    const q = query(collection(db, 'notes'), orderBy('created', 'desc'))
+    const q = query(
+      collection(db, 'notes'),
+      where('teacher_id', '==', user.uid)
+    )
     onSnapshot(q, (querySnapshot) => {
       setRefreshing(false)
       setNote(
@@ -116,22 +97,19 @@ export const TeacherDash = ({ navigation }) => {
     })
   }
   const loadLinks = async () => {
-    // const url = `https://edumate-backend.herokuapp.com/link`;
-    // await axios.get(url).then((res) => {
-    //   setRefreshing(false)
-    //   setlink(res.data)
-    // })
-     const q = query(collection(db, 'links'), orderBy('created', 'desc'))
-     onSnapshot(q, (querySnapshot) => {
-       setRefreshing(false)
-       setlink(
-         querySnapshot.docs.map((doc) => ({
-           id: doc.id,
-           data: doc.data(),
-         }))
-       )
-     })
-
+    const q = query(
+      collection(db, 'links'),
+      where('teacher_id', '==', user.uid)
+    )
+    onSnapshot(q, (querySnapshot) => {
+      setRefreshing(false)
+      setlink(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
+    })
   }
   useEffect(() => {
     loadLinks()
@@ -142,37 +120,25 @@ export const TeacherDash = ({ navigation }) => {
   }, [])
 
   const deleteNote = (id) => {
-    // axios
-    //   .delete(`https://edumate-backend.herokuapp.com/teacherNote/${id}`)
-    //   .then(() => {
-    //     alert('deleted ')
-    //     navigation.navigate('TeacherDash')
-    //   })
-     const linkDocRef = doc(db, 'notes', id)
-     try {
-       deleteDoc(linkDocRef)
-       alert('deleted')
-     } catch (err) {
-       alert(err)
-     }
-  }
-
-  const deleteLink = (id) => {
-    // console.log(id)
-    // axios
-    //   .delete(`https://edumate-backend.herokuapp.com/link/${id}`)
-    //   .then(() => {
-    //     alert('deleted ')
-    //   })
-    const linkDocRef = doc(db, 'links', id)
+    const linkDocRef = doc(db, 'notes', id)
     try {
-       deleteDoc(linkDocRef)
+      deleteDoc(linkDocRef)
       alert('deleted')
     } catch (err) {
       alert(err)
-    
     }
   }
+
+  const deleteLink = (id) => {
+    const linkDocRef = doc(db, 'links', id)
+    try {
+      deleteDoc(linkDocRef)
+      alert('deleted')
+    } catch (err) {
+      alert(err)
+    }
+  }
+
   const Logout = async () => {
     await AsyncStorage.setItem('@user', '')
     await AsyncStorage.removeItem('@user')
@@ -222,6 +188,20 @@ export const TeacherDash = ({ navigation }) => {
         }}
       >
         <Text>Paper Marking</Text>
+      </DrawerBtn>
+      <DrawerBtn
+        onPress={() => {
+          navigation.navigate('Feedbacks')
+        }}
+      >
+        <Text>Feedback</Text>
+      </DrawerBtn>
+      <DrawerBtn
+        onPress={() => {
+          navigation.navigate('Marks')
+        }}
+      >
+        <Text>Marked papers</Text>
       </DrawerBtn>
       <DrawerBtn
         onPress={() => {
@@ -303,23 +283,10 @@ export const TeacherDash = ({ navigation }) => {
                         </TeacherDashContent>
                       </TeacherCardColumn>
                       <TeacherCardColumn>
-                        {/* <TeacherDashContentButton
-                          onPress={() => {
-                            navigation.navigate('Comments', {
-                              id: notes.data.id,
-                            })
-                          }}
-                        >
-                          <Octicons
-                            size={20}
-                            color={darkLight}
-                            name='comment'
-                          />
-                        </TeacherDashContentButton> */}
                         <TeacherDashContentButton
                           onPress={() => {
                             navigation.navigate('UpdateNote', {
-                              id: notes._id,
+                              id: notes.id,
                             })
                           }}
                         >
@@ -366,7 +333,7 @@ export const TeacherDash = ({ navigation }) => {
                             grade : {links.data.grade}
                           </TeacherDashContent>
                           <TeacherDashContent>
-                            date : {links.data.date}
+                            date :{links.data.date}
                           </TeacherDashContent>
                           <TeacherDashContent>
                             time : {links.data.time}

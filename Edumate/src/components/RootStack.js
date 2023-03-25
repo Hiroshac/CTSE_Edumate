@@ -51,7 +51,7 @@ export const RootStack = () => {
             name='LoadingPage'
             component={FirstSrn}
             // options={{ navigationBarHidden: true }}
-          />
+          /> 
           <Stack.Screen
             name='Login'
             component={Login}

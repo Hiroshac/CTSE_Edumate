@@ -11,7 +11,6 @@ import {
   SafeAreaView,
   RefreshControl,
 } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -23,23 +22,22 @@ import {
   drawer,
   colors,
   DrawerBtn,
-  TeacherCardColumn,
-  TeacherDashContentButton,
-  TeacherCardRow,
   AdminContainer,
   StreamCard,
   AdminContent,
   LogoutBtn,
   DrawerIcon,
+  AdminContentButton,
+  AdminCardRow,
+  AdminCardColomn,
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { DrawerLayoutAndroid, StyleSheet } from 'react-native'
+import { collection, onSnapshot, query } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
-
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -55,12 +53,17 @@ export const Streams = ({ navigation }) => {
   const [message, setMessage] = useState('')
 
   const loadStreams = async () => {
-    const url = `https://edumate-backend.herokuapp.com/stream/`
-    await axios.get(url).then((res) => {
-      setRefreshing(false)
-      setStreams(res.data)
-    })
-  }
+    const q = query(
+    collection(db,'stream'),
+ );
+      onSnapshot(q,(snapshot)=>{
+        setStreams(snapshot.docs.map(doc=>({
+  
+    id:doc.id,
+    data:doc.data()
+  })))
+ })
+ };
 
   useEffect(() => {
     loadStreams()
@@ -148,14 +151,14 @@ export const Streams = ({ navigation }) => {
                 return (
                   <>
                     <StreamCard id={e._id}>
-                      <TeacherCardRow>
-                        <TeacherCardColumn>
-                          <AdminContent>{e.streamname}</AdminContent>
-                        </TeacherCardColumn>
-                        <TeacherCardColumn>
-                          <TeacherDashContentButton
+                      <AdminCardRow>
+                        <AdminCardColomn>
+                          <AdminContent>{e.data.streamname}</AdminContent>
+                        </AdminCardColomn>
+                        <AdminCardColomn>
+                          <AdminContentButton
                             onPress={() => {
-                              navigation.navigate('UpdateStream', { id: e._id })
+                              navigation.navigate('UpdateStream', { id: e.id })
                             }}
                           >
                             <Octicons
@@ -163,9 +166,9 @@ export const Streams = ({ navigation }) => {
                               color={darkLight}
                               name='pencil'
                             />
-                          </TeacherDashContentButton>
-                        </TeacherCardColumn>
-                      </TeacherCardRow>
+                          </AdminContentButton>
+                        </AdminCardColomn>
+                      </AdminCardRow>
                     </StreamCard>
                   </>
                 )

@@ -8,7 +8,6 @@ import {
   TextInput,
   Platform,
 } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -38,11 +37,14 @@ import {
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
+import { collection, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
 
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
+const wait = (timeout) => {
+  return new Promise((resolve) => setTimeout(resolve, timeout));
+};
 
 export const UpdateStream = ({ route, navigation }) => {
   const [streamname , setStreamname ] = useState('')
@@ -53,39 +55,39 @@ export const UpdateStream = ({ route, navigation }) => {
   const cid = route.params
   const id = cid.id
 
-  useEffect(()=>{
-    const url = `https://edumate-backend.herokuapp.com/stream/get/${id}`
-    axios.get(url).then((res) => {
-      setStreamname(res.data.streamname)
-      console.log(res.data)
-    }) 
-  },[])
-
-  const onChangeHandler = (e) => { 
-  const data = { streamname }
-    e.preventDefault()
-    const url = `https://edumate-backend.herokuapp.com/stream/${id}`
-    axios.put(url, data).then((res) => {
-      console.log('done')
-      alert('updated');
-      navigation.navigate('getstreams')
-    })
-  }
-
   const getMessage = () => {
     const status = isError ? `Error: ` : `Success: `
     return status + message
   }
 
+  const onChangeHandler = async() =>{
+    const ref = doc(db,'stream',id);
+    await updateDoc(ref,{
+     streamname:streamname
+    });
+  navigation.navigate("getstreams")
+}
+    
+  const loadData = async () => {
+        const q = doc(db,'stream',id);
+        const docref = await getDoc(q);
+        setStreamname(docref.data().streamname);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+
   return (
     <StyledContainer>
     <Text style={styles.text}> Update Stream </Text>
-      <InputCd
-          placeholder='Stream Name'
-          placeholderTextColor={darkLight}
-          onChangeText={(streamname) => setStreamname(streamname)}
-          value={streamname}
-        />
+            <InputCd
+              placeholder='Stream Name'
+              placeholderTextColor={darkLight}
+              onChangeText={(streamname) => setStreamname(streamname)}
+              value={streamname}
+            />
       <StyledButton onPress={onChangeHandler}>
              <ButtonText>Update</ButtonText>
     </StyledButton>

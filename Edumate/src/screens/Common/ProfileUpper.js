@@ -7,11 +7,6 @@ import { getDoc, doc } from 'firebase/firestore'
 import { db } from '../../../core/config'
 import { getAuth } from '@firebase/auth'
 
-// var userId = 'MdaHUyN5DV2gCB8E3rgB'
-// AsyncStorage.getItem('user').then((value) => {
-//   userId = value
-// })
-
 export default function ProfileUpper() {
   const [name, setName] = useState('')
   const [role, setRole] = useState('')
@@ -20,7 +15,6 @@ export default function ProfileUpper() {
   const [userId, setUserId] = useState(null)
   const auth = getAuth()
   const user = auth.currentUser
-  // console.log(user.uid)
 
   useEffect(() => {
     getUser()
@@ -43,20 +37,6 @@ export default function ProfileUpper() {
     }
   }
 
-  // useEffect(() => {
-  //   if (userId != '') {
-  //     loadData()
-  //   }
-  // }, [])
-  // const loadData = async () => {
-  //   const q = doc(db, 'user', userId)
-  //   const docSnap = await getDoc(q)
-  //   const res = docSnap.data()
-  //   const name = res.firstName + ' ' + res.lastName
-  //   setName(name)
-  //   setRole(res.type)
-  //   setStream(res.stream)
-  // }
   return (
     <>
       <StatusBar style='dark' />
