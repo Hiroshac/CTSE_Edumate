@@ -36,7 +36,7 @@ export default function Profile({ navigation }) {
   const [refreshing, setRefreshing] = useState(false)
 
   const [userId, setUserId] = useState(null)
-  const auth = getAuth
+  const auth = getAuth()
   const user = auth.currentUser
   // console.log(user.uid)
 
@@ -160,7 +160,7 @@ export default function Profile({ navigation }) {
                 <ButtonTextWhite>Update Details</ButtonTextWhite>
               </StyledButtoWhite>
             </View>
-            {/* <View style={styles.tagInnerView}>
+            <View style={styles.tagInnerView}>
               <StyledButtoWhite
                 onPress={() => {
                   navigation.navigate('UpdatePassword')
@@ -168,7 +168,7 @@ export default function Profile({ navigation }) {
               >
                 <ButtonTextWhite>Reset Password</ButtonTextWhite>
               </StyledButtoWhite>
-            </View> */}
+            </View>
           </View>
           <StyledButton onPress={deleteProfile}>
             <ButtonText>Delete Profile</ButtonText>
