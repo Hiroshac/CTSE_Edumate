@@ -4,7 +4,9 @@ import {
   DashButton,
   ButtonText,
   StyledButton,
+  AdminHomebutton,
 } from '../../constants/styles.js'
+import { MaterialIcons, Entypo, Ionicons   } from '@expo/vector-icons';
 
 const Separator = () => (
   <View style={styles.separator} />
@@ -14,36 +16,30 @@ export const Adminhome = ({navigation}) => {
   return (
   
     <SafeAreaView style={styles.container}>
-          <View style={styles.btnview}>
-          <StyledButton
+          <AdminHomebutton
            onPress={() => {
             navigation.navigate('getstreams')
           }}
           >
-          <ButtonText>Stream Management</ButtonText>
-         </StyledButton>         
-          </View>
-      <Separator />
-           <View style={styles.btnview}>
-           <StyledButton
+          <MaterialIcons name="subject" size={24} color="black" />
+          <Text style={{marginLeft:20, fontSize:20}}>Stream Management</Text>
+         </AdminHomebutton> 
+         <AdminHomebutton
            onPress={() => {
             navigation.navigate('getsubjects')
           }}
-           >
-              <ButtonText>Subject Management</ButtonText>
-           </StyledButton>   
-          </View>
-      <Separator />
-          <View style={styles.btnview}>
-          <StyledButton
-          onPress={() => {
+          >
+          <Entypo name="book" size={24} color="black" />
+          <Text style={{marginLeft:20, fontSize:20}}>Subject Management</Text>
+         </AdminHomebutton>  
+         <AdminHomebutton
+           onPress={() => {
             navigation.navigate('getexams')
           }}
           >
-          <ButtonText>Exam Management</ButtonText>
-         </StyledButton>  
-          </View>
-      <Separator />
+            <Ionicons name="ios-newspaper-outline" size={24} color="black" />
+          <Text style={{marginLeft:20, fontSize:20}}>Exam Management</Text>
+         </AdminHomebutton>          
     </SafeAreaView>
   );
   }
@@ -53,8 +49,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "column",
     justifyContent: 'center',
-    marginTop: 250,
-    marginHorizontal: 40,
+    marginTop: 200,
     height: 300,
   },
   separator: {

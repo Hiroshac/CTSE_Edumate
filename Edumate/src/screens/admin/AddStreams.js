@@ -9,7 +9,6 @@ import {
   TextInput,
   Platform,
 } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -22,6 +21,8 @@ import {
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
+import { addDoc, collection } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
 
@@ -30,18 +31,16 @@ export const AddStreams = ({navigation}) => {
 
   const [streamname, setStreamname] = useState('')
 
-  const formData = {streamname}
-
-  const onChangeHandler = () => {
-    const url = `https://edumate-backend.herokuapp.com/stream/add`
-    axios.post(url, formData).then((res) => {
-      console.log('done')
-      alert('Stream added')
-      navigation.navigate('getstreams')
-    })
+  const onChangeHandler = async() => {
+    await addDoc(collection(db,"stream"),{
+    streamname:streamname,
   }
- 
-    const getMessage = () => {
+  );
+  alert("Stream Added!")
+  navigation.navigate("getstreams")
+}
+
+const getMessage = () => {
       const status = isError ? `Error: ` : `Success: `
       return status + message
     }
@@ -93,17 +92,3 @@ const styles = StyleSheet.create({
     fontSize:30,
   },
 });
-
-
-// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
-// const Tab = createBottomTabNavigator();
-
-// function MyTabs() {
-//   return (
-//     <Tab.Navigator>
-//       <Tab.Screen name="Home" component={HomeScreen} />
-//       <Tab.Screen name="Settings" component={SettingsScreen} />
-//     </Tab.Navigator>
-//   );
-// }

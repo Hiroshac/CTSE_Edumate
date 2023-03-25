@@ -374,19 +374,13 @@ export const AdminContent = styled.Text`
 
 export const AdminCard = styled.View`
 
-  width: 370px;
-
-  height: 100px;
-
-  border-color: ${secondary};
-
-  border: 1px;
-
-  margin-left: 20px;
-
-  margin-top: 10px;
-
-  margin-bottom: 10px;
+width: 340px;
+height: 200px;
+border-color: ${secondary};
+border: 1px;
+// margin-left: 5px;
+margin-top: 10px;
+margin-bottom: 10px;
 
 `
 
@@ -449,6 +443,47 @@ export const SAStyledButton = styled.TouchableOpacity`
   margin: 5px;
   height: 70px;
   `
+  export const AdminContentButton = styled.TouchableOpacity`
+  margin-left: 150px;
+  margin-top: 20px;
+  font-size: 12px;
+  flex: 1px;
+  right: 50px;
+`
+export const AdminCardRow = styled.View`
+  flex-direction: row;
+  flex: 1px;
+`
+export const AdminCardColomn = styled.View`
+  flex-direction: column;
+  flex: 1px;
+`
+export const AdminRow = styled.View`
+  flex-direction: row;
+  flex: 1;
+  // margin-top: 5px;
+  justify-content:center;
+`
+export const AdminBox = styled.View`
+  width: 350px;
+  height: 230px;
+  border-color: ${secondary};
+  border: 2px;
+  margin-bottom: 30px;
+  borderRadius: 10px;
+  padding: 20px;
+`
+export const AdminCol = styled.View`
+  flex-direction: column;
+  flex: 1px;
+  padding: 5px;
+`
+export const AdminButton = styled.TouchableOpacity`
+  background-color: ${primary};
+  justify-content: center;
+  width: 40px;
+  `
+
   export const Feedback = styled.View`
   width: 350px;
   height: 150px;
@@ -493,8 +528,20 @@ export const ButtonEx = styled.TouchableOpacity`
   margin: 5px;
   height: 40px;
   width: 100px;
-  `
-
+`
+export const AdminHomebutton = styled.TouchableOpacity`
+    flex-direction: row;
+    border-color: ${brand};
+    border: 2px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    margin-left: 40px;
+    height: 55px;
+    width: 300px;
+    margin-top: 50px;
+`
+  
   export const ButtonDel = styled.TouchableOpacity`
   background-color: ${primary};
   justify-content: center;

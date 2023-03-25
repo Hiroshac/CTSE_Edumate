@@ -11,7 +11,6 @@ import {
   SafeAreaView,
   RefreshControl
 } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -23,25 +22,26 @@ import {
   drawer,
   colors,
   DrawerBtn,
-  TeacherCardColumn,
-  TeacherDashContentButton,
-  TeacherCardRow,
   AdminContainer,
   StreamCard,
   AdminContent,
   LogoutBtn,
   DrawerIcon,
   AdminCard,
-  TeacherCard,
+  AdminContentButton,
+  AdminCardRow,
+  AdminCardColomn,
+  AdminBox,
+  AdminRow,
+  AdminButton,
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { DrawerLayoutAndroid, StyleSheet } from 'react-native'
+import { collection, deleteDoc, doc, onSnapshot, query } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
-
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
   const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -56,22 +56,32 @@ export const Exams = (
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState('')
 
-  const deleteExam = (id) => {
-    axios.delete(`https://edumate-backend.herokuapp.com/examtime/${id}`)
-    alert('Successfully deleted');
-  }
 
   const loadExams = async () => {
-    const url = `https://edumate-backend.herokuapp.com/examtime/`
-    await axios.get(url).then((res) => {
-      setRefreshing(false)
-      setExams(res.data)
-    })
+    const q = query(
+    collection(db,'exam'),
+ );
+      onSnapshot(q,(snapshot)=>{
+        setExams(snapshot.docs.map(doc=>({
+  
+    id:doc.id,
+    data:doc.data()
+  })))
+ })
+ };
+
+ const deleteExam = async (id) => {
+  try {
+    await deleteDoc(doc(db, 'exam', id));
+    alert("Exam Deleted!")
+  } catch (error) {
+    console.error('Error deleting exam: ', error);
   }
+};
 
   useEffect(() => {
     loadExams()
-  })
+  },[])
 
   const getMessage = () => {
     const status = isError ? `Error: ` : `Success: `
@@ -148,53 +158,47 @@ export const Exams = (
       <InnerContainer>
         <View>
           <ScrollView
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={loadExams} />
-            }
+            // refreshControl={
+            //   <RefreshControl refreshing={refreshing} onRefresh={loadExams} />
+            // }
           >
             {exams.map((e) => {
               return (
                 <>
-                  <TeacherCard id={e._id}>
-                    <TeacherCardRow>
-                      <TeacherCardColumn>
-                        <AdminContent>
-                          Date :    {e.day}
-                        </AdminContent>
-                        <AdminContent>
-                          Start Time :    {e.start}
-                        </AdminContent>
-                        <AdminContent>
-                          End Time :    {e.end}
-                        </AdminContent>
-                        <AdminContent>
-                          Stream :    {e.stream}
-                        </AdminContent>
-                        <AdminContent>
-                          Subject :   {e.subject}
-                        </AdminContent>
-                        <AdminContent>
-                          Grade :   {e.grade}
-                        </AdminContent>
-                      </TeacherCardColumn>
-                      <TeacherCardColumn>
-                        <TeacherDashContentButton
-                          onPress={() => {
-                            navigation.navigate('UpdateExam',{id:e._id})
-                          }}
-                        >
-                          <Octicons size={20} color={darkLight} name='pencil' />
-                        </TeacherDashContentButton>
-                        <TeacherDashContentButton
-                          onPress={() => {
-                            deleteExam(e._id)
-                          }}
-                        >
-                          <Octicons size={20} color={darkLight} name='trash' />
-                        </TeacherDashContentButton>                
-                      </TeacherCardColumn>
-                    </TeacherCardRow>
-                  </TeacherCard>
+                    <AdminBox id={e._id}>
+                      <View>
+                            <Text style={{fontSize:18}}>Date : {e.data.begin}</Text>
+                            <Text style={{fontSize:18}}>Start Time : {e.data.begint}</Text>
+                            <Text style={{fontSize:18}}>End Time : {e.data.endtime}</Text>
+                            <Text style={{fontSize:18}}>Stream : {e.data.stream}</Text>
+                            <Text style={{fontSize:18}}>Subject : {e.data.subject}</Text>
+                            <Text style={{fontSize:18}}>Grade : {e.data.grade}</Text>
+                      </View>                   
+                      <AdminRow>
+                        <AdminButton
+                            onPress={() => {
+                              deleteExam(e.id)
+                            }}
+                          >
+                            <Octicons
+                              size={20}
+                              color={darkLight}
+                              name='trash'
+                            />
+                          </AdminButton>
+                          <AdminButton
+                            onPress={() => {
+                              navigation.navigate('UpdateExam', { id: e.id })
+                            }}
+                          >
+                            <Octicons
+                              size={20}
+                              color={darkLight}
+                              name='pencil'
+                            />
+                          </AdminButton>
+                        </AdminRow>                                    
+                    </AdminBox>
                 </>
               )
             })}
@@ -212,6 +216,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 18,
     paddingTop: 15,
+  },
+  Text:{
+    fontSize:80
   },
   navigationContainer: {
     backgroundColor: '#ecf0f1',

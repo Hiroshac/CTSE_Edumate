@@ -8,7 +8,6 @@ import {
   TextInput,
   Platform,
 } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -38,52 +37,80 @@ import {
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
+import { collection, doc, getDoc, onSnapshot, query, updateDoc } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
-
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
 export const UpdateSubject = ({ route, navigation }) => {
   const [streamname, setStreamname] = useState('')
   const [subjectname, setSubjectname] = useState('')
+  const [streams, setStreams] = useState([]);
+
 
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState('')
   const  id  = route.params.id
+   
+    const loadData = async () => {
+      const q = doc(db,'subject',id);
+      const docref = await getDoc(q);
+      console.log(docref.data());
+      setStreamname(docref.data().streamname);
+      setSubjectname(docref.data().subjectname); 
+  };
 
-  useEffect(()=>{
-    const url = `https://edumate-backend.herokuapp.com/subject/get/${id}`
-    axios.get(url).then((res) => {
-      setStreamname(res.data.streamname)
-      setSubjectname(res.data.subjectname )
-    })
-  },[])
-
-  const data = {
-    streamname,
-    subjectname,
-  }
-
-  const onChangeHandler = (e) => {
-    e.preventDefault()
-    const url = `https://edumate-backend.herokuapp.com/subject/${id}`
-    console.log(data);
-    axios.put(url, data).then((res) => {
-      alert('updated');
+  const onChangeHandler = async() =>{
+          const ref = doc(db,'subject',id);
+          await updateDoc(ref,{
+           streamname:streamname,
+           subjectname:subjectname
+        });
       navigation.navigate("getsubjects")
-    })
-  }
+    
+    }
+
+    const loadStreams = async () => {
+      const q = query(
+      collection(db,'stream'),
+  );
+        onSnapshot(q,(snapshot)=>{
+          setStreams(snapshot.docs.map(doc=>({
+    
+      id:doc.id,
+      data:doc.data()
+    })))
+  })
+  };
+
+  useEffect(() => {
+    loadData();
+    loadStreams();
+  }, []);
+
 
   return (
     <StyledContainer>
     <Text style={styles.text}> Update Subject </Text>
-    <InputCd
-              placeholder='Stream Name'
-              placeholderTextColor={darkLight}
-              onChangeText={(streamname) => setStreamname(streamname)}
-              value={streamname}
-            />
+           <View style={styles.Picker}>
+              <Picker
+                    selectedValue={streamname}
+                    onValueChange={(itemValue, itemIndex) =>
+                    setStreamname(itemValue)
+                    }
+                    >
+                    {streams.map((sub) => {
+                    return (
+                          <Picker.Item
+                            id={sub.id}
+                            label={sub.data.streamname}
+                            value={sub.data.streamname}
+                            />
+                          )
+                          })}
+                  </Picker>
+            </View>
+ 
               <InputCd
               placeholder='Subject Name'
               placeholderTextColor={darkLight}
