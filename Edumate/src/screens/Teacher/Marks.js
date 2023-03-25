@@ -51,58 +51,54 @@ import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
 import { collection, onSnapshot, query, where } from 'firebase/firestore'
 import { db } from '../../../core/config'
+import { getAuth } from 'firebase/auth'
 
 const { brand, darkLight, primary } = colors
 
-
-export const Feedback = ({ route, navigation }) => {
-  const [feedback, setFeedback] = useState([])
+export const Marks = ({ route, navigation }) => {
+  const [mark, setMark] = useState([])
   const [note, setNote] = useState()
   const [teacher_id, setTeacher] = useState('')
 
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState('')
-
-
-  const getFeedback = () => {
-    // axios
-    //   .get(`https://edumate-backend.herokuapp.com/comment/get/${id}`)
-    //   .then((res) => {
-    //     setComment(res.data)
-    //   })
-    const userRef = query(collection(db, 'feedback'))
-    const qm = query(userRef)
-    // where('stream', '==', id)
-    onSnapshot(qm, (querySnapshot) => {
-      setFeedback(
-        querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }))
-      )
-    })
+  const auth = getAuth()
+  const user = auth.currentUser
+  const getMarks = () => {
+     const marksRef = query(collection(db, 'marks'))
+     const qm = query(marksRef, where('userId', '==', user.uid))
+     onSnapshot(qm, (querySnapshot) => {
+       setMark(
+         querySnapshot.docs.map((doc) => ({
+           id: doc.id,
+           data: doc.data(),
+         }))
+       )
+     })
   }
 
   useEffect(() => {
-    getFeedback()
+    getMarks()
   }, [])
 
   return (
     <StyledContainer>
       <StatusBar style='dark' />
-      <PageTitle>Comments</PageTitle>
+      <PageTitle>Marked papers</PageTitle>
       <InnerContainer>
         <View>
           <ScrollView>
-            {feedback.map((data) => {
+            {mark.map((data) => {
               return (
                 <>
-                  <TeacherCard key={data._id}>
-                    <SubTitle>Student : {data.data.sid}</SubTitle>
+                  <TeacherCard key={data.id}>
+                    <SubTitle>Student : {data.data.student_id}</SubTitle>
                     <SubTitle1></SubTitle1>
                     <Comments>
+                      <SubTitle>Mark</SubTitle>
+                      <SubTitle1>{data.data.mark}</SubTitle1>
                       <SubTitle>Comment</SubTitle>
-                      <SubTitle1>{data.data.Comment}</SubTitle1>
+                      <SubTitle1>{data.data.comment}</SubTitle1>
                     </Comments>
                   </TeacherCard>
                 </>

@@ -125,11 +125,6 @@ export const UpdateNote = ({ route, navigation }) => {
       note: file,
       teacher_id,
     }
-    // const url = `https://edumate-backend.herokuapp.com/teacherNote/${id}`
-    // axios.put(url, data).then((res) => {
-    //   alert('Note updated')
-    //   navigation.navigate('TeacherDash')
-    // })
      const linkDocRef = doc(db, 'notes', id)
     await updateDoc(linkDocRef, 
      {subject,

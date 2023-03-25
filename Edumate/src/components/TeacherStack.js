@@ -12,6 +12,7 @@ import { TeacherDash } from '../screens/Teacher/TeacherDash'
 import { PaperMarking } from '../screens/Teacher/PaperMarking'
 import { Answers } from '../screens/Teacher/Answers'
 import UserStack from './UserStack'
+import { Marks } from '../screens/Teacher/Marks'
 const { tertiary, primary } = colors
 
 const Stack = createNativeStackNavigator()
@@ -42,6 +43,7 @@ export const TeacherStack = () => {
         <Stack.Screen name='UpdateLink' component={UpdateLink} options={{}} />
         <Stack.Screen name='UpdateNote' component={UpdateNote} options={{}} />
         <Stack.Screen name='Feedbacks' component={Feedback} options={{}} />
+        <Stack.Screen name='Marks' component={Marks} options={{}} />
         <Stack.Screen
           name='PaperMarking'
           component={PaperMarking}

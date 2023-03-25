@@ -39,8 +39,6 @@ import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
 
-// const API_URL =
-//   Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
 export const UpdateLink = ({ route, navigation }) => {
   const [dataLinks, setDateLinks] = useState([])
@@ -81,15 +79,6 @@ export const UpdateLink = ({ route, navigation }) => {
   }
 
   const loadLink = async () => {
-    // const url = `https://edumate-backend.herokuapp.com/link/${id}`
-    // axios.get(url).then((res) => {
-    //   setSubject(res.data.subject)
-    //   setLesson(res.data.lesson_name)
-    //   setGrade(res.data.grade)
-    //   setDate(res.data.date)
-    //   setTime(res.data.time)
-    //   setLink(res.data.link)
-    // })
     const q = doc(db, 'links', id)
     const docSnap = await getDoc(q)
 
@@ -122,14 +111,10 @@ export const UpdateLink = ({ route, navigation }) => {
       date: linkDate,
       time: linkTime,
       link,
-      teacher_id: '516',
+      teacher_id,
     }
     e.preventDefault()
-    // const url = `https://edumate-backend.herokuapp.com/link/${id}`
-    // axios.put(url, data).then((res) => {
-    //   alert('Updated')
-    //   navigation.navigate('TeacherDash')
-    // })
+  
     const linkDocRef = doc(db, 'links', id)
     await updateDoc(linkDocRef, {
       subject,

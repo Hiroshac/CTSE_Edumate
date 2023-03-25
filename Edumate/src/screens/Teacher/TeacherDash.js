@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   ImageBackground,
   View,
@@ -56,13 +56,11 @@ import {
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
-import { waitForPendingWrites } from 'firebase/firestore'
+import { deleteDoc, doc, waitForPendingWrites, where } from 'firebase/firestore'
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore'
 import { db } from '../../../core/config'
 import { getAuth, signOut } from 'firebase/auth'
 const { brand, darkLight, primary } = colors
-
-
 
 export const TeacherDash = ({ navigation }) => {
   const drawer = useRef(null)
@@ -71,33 +69,42 @@ export const TeacherDash = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(true)
   const auth = getAuth()
   const [userId, setUserId] = useState(null)
+  const [userDetails, setUserDetails] = useState()
 
   const user = auth.currentUser
   console.log(user.uid)
 
   useEffect(() => {
-    getUser
+    getUser()
   }, [])
 
   const getUser = async () => {
-    try {
-      const user = await AsyncStorage.getItem('@user').then((value) => {
-        console.log(value)
-        setUserId(value)
-      })
-      console.log(user)
-    } catch (e) {
-      console.log('Fail to get user')
-    }
+    // try {
+    //   const user = await AsyncStorage.getItem('@user').then((value) => {
+    //     console.log(value)
+    //     setUserId(value)
+    //   })
+    //   console.log(user)
+    // } catch (e) {
+    //   console.log('Fail to get user')
+    // }
+    const userRef = query(collection(db, 'user'))
+    const qm = query(userRef, where('uid', '==', id))
+    onSnapshot(qm, (querySnapshot) => {
+      setUserDetails(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
+    })
   }
 
   const loadNotes = async () => {
-    // const url = `https://edumate-backend.herokuapp.com/teacherNote/get/${userId}`;
-    // await axios.get(url).then((res) => {
-    //   setRefreshing(false)
-    //   setNote(res.data)
-    // })
-    const q = query(collection(db, 'notes'), orderBy('created', 'desc'))
+    const q = query(
+      collection(db, 'notes'),
+      where('teacher_id', '==', user.uid)
+    )
     onSnapshot(q, (querySnapshot) => {
       setRefreshing(false)
       setNote(
@@ -109,12 +116,10 @@ export const TeacherDash = ({ navigation }) => {
     })
   }
   const loadLinks = async () => {
-    // const url = `https://edumate-backend.herokuapp.com/link`;
-    // await axios.get(url).then((res) => {
-    //   setRefreshing(false)
-    //   setlink(res.data)
-    // })
-    const q = query(collection(db, 'notes'), orderBy('created', 'desc'))
+    const q = query(
+      collection(db, 'links'),
+      where('teacher_id', '==', user.uid)
+    )
     onSnapshot(q, (querySnapshot) => {
       setRefreshing(false)
       setlink(
@@ -134,20 +139,23 @@ export const TeacherDash = ({ navigation }) => {
   }, [])
 
   const deleteNote = (id) => {
-    axios
-      .delete(`https://edumate-backend.herokuapp.com/teacherNote/${id}`)
-      .then(() => {
-        alert('deleted ')
-        navigation.navigate('TeacherDash')
-      })
+    const linkDocRef = doc(db, 'notes', id)
+    try {
+      deleteDoc(linkDocRef)
+      alert('deleted')
+    } catch (err) {
+      alert(err)
+    }
   }
 
   const deleteLink = (id) => {
-    axios
-      .delete(`https://edumate-backend.herokuapp.com/link/${id}`)
-      .then(() => {
-        alert('deleted ')
-      })
+    const linkDocRef = doc(db, 'links', id)
+    try {
+      deleteDoc(linkDocRef)
+      alert('deleted')
+    } catch (err) {
+      alert(err)
+    }
   }
 
   const Logout = async () => {
@@ -199,6 +207,20 @@ export const TeacherDash = ({ navigation }) => {
         }}
       >
         <Text>Paper Marking</Text>
+      </DrawerBtn>
+      <DrawerBtn
+        onPress={() => {
+          navigation.navigate('Feedbacks')
+        }}
+      >
+        <Text>Feedback</Text>
+      </DrawerBtn>
+      <DrawerBtn
+        onPress={() => {
+          navigation.navigate('Marks')
+        }}
+      >
+        <Text>Marked papers</Text>
       </DrawerBtn>
       <DrawerBtn
         onPress={() => {
@@ -296,7 +318,7 @@ export const TeacherDash = ({ navigation }) => {
                         <TeacherDashContentButton
                           onPress={() => {
                             navigation.navigate('UpdateNote', {
-                              id: notes._id,
+                              id: notes.id,
                             })
                           }}
                         >
@@ -304,7 +326,7 @@ export const TeacherDash = ({ navigation }) => {
                         </TeacherDashContentButton>
                         <TeacherDashContentButton
                           onPress={() => {
-                            deleteNote(notes.data.id)
+                            deleteNote(notes.id)
                           }}
                         >
                           <Octicons size={20} color={darkLight} name='trash' />
@@ -343,7 +365,7 @@ export const TeacherDash = ({ navigation }) => {
                             grade : {links.data.grade}
                           </TeacherDashContent>
                           <TeacherDashContent>
-                            date : {links.data.date}
+                            date :{links.data.date}
                           </TeacherDashContent>
                           <TeacherDashContent>
                             time : {links.data.time}
@@ -368,7 +390,7 @@ export const TeacherDash = ({ navigation }) => {
                           </TeacherDashContentButton>
                           <TeacherDashContentButton
                             onPress={() => {
-                              deleteLink(links.data.id)
+                              deleteLink(links.id)
                             }}
                           >
                             <Octicons
