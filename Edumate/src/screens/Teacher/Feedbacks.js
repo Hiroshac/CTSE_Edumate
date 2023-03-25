@@ -9,7 +9,6 @@ import {
   Platform,
   ScrollView,
 } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -50,40 +49,42 @@ import {
 } from '../../constants/styles.js'
 import { StatusBar } from 'expo-status-bar'
 import { Octicons, Ionicons, Fontisto } from '@expo/vector-icons'
+import { collection, onSnapshot, query, where } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { brand, darkLight, primary } = colors
 
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
-export const Comment = ({ route, navigation }) => {
-  const [comment, setComment] = useState([])
+export const Feedback = ({ route, navigation }) => {
+  const [feedback, setFeedback] = useState([])
   const [note, setNote] = useState()
   const [teacher_id, setTeacher] = useState('')
 
   const [isError, setIsError] = useState(false)
   const [message, setMessage] = useState('')
 
-  const { id } = route.params
 
-  const getLink = () => {
-    axios
-      .get(`https://edumate-backend.herokuapp.com/comment/get/${id}`)
-      .then((res) => {
-        setComment(res.data)
-      })
+  const getFeedback = () => {
+    // axios
+    //   .get(`https://edumate-backend.herokuapp.com/comment/get/${id}`)
+    //   .then((res) => {
+    //     setComment(res.data)
+    //   })
+    const userRef = query(collection(db, 'feedback'))
+    const qm = query(userRef)
+    // where('stream', '==', id)
+    onSnapshot(qm, (querySnapshot) => {
+      setFeedback(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
+    })
   }
 
-  const getNote = () => {
-    axios
-      .get(`https://edumate-backend.herokuapp.com/teacherNote/${id}`)
-      .then((res) => {
-        setNote(res.data.note)
-      })
-  }
   useEffect(() => {
-    getLink()
-    getNote()
+    getFeedback()
   }, [])
 
   return (
@@ -93,15 +94,15 @@ export const Comment = ({ route, navigation }) => {
       <InnerContainer>
         <View>
           <ScrollView>
-            {comment.map((data) => {
+            {feedback.map((data) => {
               return (
                 <>
                   <TeacherCard key={data._id}>
-                    <SubTitle>Student : {data.studentName}</SubTitle>
+                    <SubTitle>Student : {data.data.sid}</SubTitle>
                     <SubTitle1></SubTitle1>
                     <Comments>
                       <SubTitle>Comment</SubTitle>
-                      <SubTitle1>{data.comment}</SubTitle1>
+                      <SubTitle1>{data.data.Comment}</SubTitle1>
                     </Comments>
                   </TeacherCard>
                 </>

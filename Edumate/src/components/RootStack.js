@@ -13,7 +13,6 @@ import { UploadLink } from '../screens/Teacher/UploadLink'
 import { UploadNote } from '../screens/Teacher/UploadNote'
 import { UpdateLink } from '../screens/Teacher/UpdateLink'
 import { UpdateNote } from '../screens/Teacher/UpdateNote'
-import { Comment } from '../screens/Teacher/Comments'
 import UserStack from './UserStack'
 import { TeacherStack } from './TeacherStack'
 import { AdminStack } from './AdminStack'
@@ -21,6 +20,7 @@ import { StudentDash } from '../screens/student/StudentDash'
 import { StudentStack } from './StudentStack'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '../../core/config'
+import { Feedback } from '../screens/Teacher/Feedbacks'
 
 const Stack = createNativeStackNavigator()
 
@@ -123,8 +123,8 @@ export const RootStack = () => {
             }}
           />
           <Stack.Screen
-            name='Comments'
-            component={Comment}
+            name='Feedback'
+            component={Feedback}
             options={{
               headerShown: false,
             }}

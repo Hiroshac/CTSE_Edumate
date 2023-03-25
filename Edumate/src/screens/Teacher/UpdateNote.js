@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { View, Platform, ToastAndroid, Alert } from 'react-native'
-import axios from 'axios'
 import { Input } from '../../constants/InputField'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -24,15 +23,23 @@ import { UploadFile } from '../../../core/fileUpload'
 import { LogBox } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
 import { Picker } from '@react-native-picker/picker'
+import {
+  doc,
+  updateDoc,
+  collection,
+  query,
+  getDoc,
+  orderBy,
+  onSnapshot,
+} from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 LogBox.ignoreLogs(['Setting a timer'])
 
 const { brand, darkLight, primary } = colors
 
-const API_URL =
-  Platform.OS === 'ios' ? 'http://localhost:5000' : 'http://10.0.2.2:5000'
 
-export const UpdateNote = ({ route,navigation }) => {
+export const UpdateNote = ({ route, navigation }) => {
   const [subject, setSubject] = useState([])
   const [lesson_name, setLesson] = useState('')
   const [grade, setGrade] = useState('')
@@ -45,8 +52,6 @@ export const UpdateNote = ({ route,navigation }) => {
   const [isChoosed, setIsChoosed] = useState(false)
   const [uploadCompleted, isUploadCompleted] = useState(false)
   const [uploadStart, setUploadStart] = useState(false)
-
-
 
   var file = ''
   AsyncStorage.getItem('file').then((value) => {
@@ -98,37 +103,38 @@ export const UpdateNote = ({ route,navigation }) => {
   //   )
   // }
 
-   const loadNote = async () => {
-     const url = `https://edumate-backend.herokuapp.com/teacherNote/${id}`
-     axios.get(url).then((res) => {
-       setSubject(res.data.subject)
-       setLesson(res.data.lesson_name)
-       setGrade(res.data.grade)
-       setNote(res.data.note)
-     })
-   }
+  const loadNote = async () => {
+    const q = doc(db, 'notes', id)
+    const docSnap = await getDoc(q)
+    setSubject(docSnap.data().subject)
+    setLesson(docSnap.data().lesson_name)
+    setGrade(docSnap.data().grade)
+    setNote(docSnap.data().note)
+  }
 
-   useEffect(() => {
-     loadNote()
-   }, [])
+  useEffect(() => {
+    loadNote()
+  }, [])
 
-
-  const onChangeHandler = () => {
-   
-      uploadFile()
-      const data = {
-        subject,
-        lesson_name,
-        grade,
-        note: file,
-        teacher_id
-      }
-      const url = `https://edumate-backend.herokuapp.com/teacherNote/${id}`
-      axios.put(url, data).then((res) => {
-        alert('Note updated')
-        navigation.navigate('TeacherDash')
-      })
-    
+  const onChangeHandler = async() => {
+    uploadFile()
+    const data = {
+      subject,
+      lesson_name,
+      grade,
+      note: file,
+      teacher_id,
+    }
+     const linkDocRef = doc(db, 'notes', id)
+    await updateDoc(linkDocRef, 
+     {subject,
+      lesson_name,
+      grade,
+      note: file,
+      teacher_id,}
+    )
+    alert('Updated')
+    navigation.navigate('TeacherDash')
   }
 
   return (
