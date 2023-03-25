@@ -19,8 +19,6 @@ export const SSubject = ({ navigation,route }) => {
 
   const getstream = route.params.stream;
   const getid = route.params.id;
-  // console.log(getstream);
-  // const id = getid.fid
   const [refreshing, setRefreshing] = useState(true)
   const [item, setItem] = useState([]);
   const drawer = useRef(null);
@@ -31,6 +29,7 @@ export const SSubject = ({ navigation,route }) => {
     loadData();
   }, []);
 
+  //fetch subject according to the user stream
   const loadData = async () => {
     const q = query(
       collection(db,'subject'),
@@ -49,9 +48,6 @@ export const SSubject = ({ navigation,route }) => {
 
     <StyledContainer>
       <ScrollView
-    // refreshControl={
-    //   <RefreshControl refreshing={refreshing} onRefresh={loadData} />
-    // }
       >
       <StatusBar style="dark" />
       <PageTitle style={styles.h}>Subject</PageTitle>

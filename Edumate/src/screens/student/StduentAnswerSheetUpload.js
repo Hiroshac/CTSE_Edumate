@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { View, Platform, ToastAndroid, Alert } from "react-native";
-import axios from "axios";
 import { Input } from "../../constants/InputField";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
@@ -29,9 +28,6 @@ import { db } from "../../../core/config";
 LogBox.ignoreLogs(["Setting a timer"]);
 
 const { brand, darkLight, primary } = colors;
-
-// const API_URL =
-//   Platform.OS === "ios" ? "http://localhost:5000" : "http://10.0.2.2:5000";
 
 export const StduentAnswerSheetUpload = ({ navigation, route }) => {
   const getname = route.params;
@@ -82,6 +78,7 @@ export const StduentAnswerSheetUpload = ({ navigation, route }) => {
     loadSubject();
   }, []);
 
+  //pick document and fetch document details
   const pickDocument = async () => {
     let result = await DocumentPicker.getDocumentAsync({});
 
@@ -109,6 +106,7 @@ export const StduentAnswerSheetUpload = ({ navigation, route }) => {
     }
   };
 
+  //add answer sheet
   const onChangeHandler = async() =>{
     await addDoc(collection(db,"answer"),{
       subjectname:subjectname,
@@ -132,7 +130,7 @@ export const StduentAnswerSheetUpload = ({ navigation, route }) => {
           <View>
             <InputCd
               placeholderTextColor={darkLight}
-              name="lesson_name"
+              // name="lesson_name"
               disabled
               value={subjectname}
             />

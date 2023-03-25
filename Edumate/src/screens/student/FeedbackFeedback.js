@@ -17,6 +17,7 @@ export const FeedbackFeedback = ({navigation,route}) => {
     loadData();
   }, []);
 
+  //fetch data according to the feedback id
   const loadData = async () => {
     const q = doc(db,'feedback',fid);
     const docref = await getDoc(q);
@@ -25,6 +26,7 @@ export const FeedbackFeedback = ({navigation,route}) => {
     setItemsub(docref.data().subject);
 };
 
+//update data
 const onChangeHandler = async() =>{
     const ref = doc(db,'feedback',fid);
     await updateDoc(ref,{

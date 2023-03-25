@@ -11,11 +11,11 @@ export const FeedbackDisplay = ({navigation,route}) => {
   const [item, setItem] = useState([]);
   const get = route.params;
   const sid = get.id;
-  // console.log(sid);
     useEffect(() => {
         loadData();
       }, []);
     
+      //fetch data according to the user
       const loadData = async () => {
         const q = query(
           collection(db,'feedback'),
@@ -29,12 +29,11 @@ export const FeedbackDisplay = ({navigation,route}) => {
         })
       };
 
-      //delete 
+      //delete data according to the feedback id
       const DeleteFeedback = async(fid) => {
         const ref = doc(db, 'feedback', fid)
         await deleteDoc(ref)
         .then(() => {
-            // navigation.navigate("")
             alert("Delete Feedback");
         }).catch((error) => {
             alert(error.message)
@@ -51,10 +50,7 @@ export const FeedbackDisplay = ({navigation,route}) => {
         {item.map((r) => {
         return (
           <Feedback
-            // onPress={() => Linking.openURL(r.note)}
-            // style={style.btn}
           >
-            {/* <Octicons size={40} color={darkLight} name="download" /> */}
             <View style={{marginLeft:2}}>
               <Text style={{fontWeight: 'bold'}}>Comment :</Text>
               <Text style={{height:30,marginLeft:20,marginTop:5}}>{r.data.Comment}</Text>
