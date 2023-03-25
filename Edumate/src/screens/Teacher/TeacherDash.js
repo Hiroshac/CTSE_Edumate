@@ -310,19 +310,6 @@ export const TeacherDash = ({ navigation }) => {
                       <TeacherCardColumn>
                         <TeacherDashContentButton
                           onPress={() => {
-                            navigation.navigate('Comments', {
-                              id: notes.data.id,
-                            })
-                          }}
-                        >
-                          <Octicons
-                            size={20}
-                            color={darkLight}
-                            name='comment'
-                          />
-                        </TeacherDashContentButton>
-                        <TeacherDashContentButton
-                          onPress={() => {
                             navigation.navigate('UpdateNote', {
                               id: notes.id,
                             })
@@ -384,7 +371,7 @@ export const TeacherDash = ({ navigation }) => {
                           <TeacherDashContentButton
                             onPress={() => {
                               navigation.navigate('UpdateLink', {
-                                id: links.data.id,
+                                id: links.id,
                               })
                             }}
                           >
