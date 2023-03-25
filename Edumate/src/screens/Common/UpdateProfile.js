@@ -18,7 +18,7 @@ import { doc, updateDoc, getDoc } from 'firebase/firestore'
 import { db } from '../../../core/config'
 const { darkLight, black, brand } = colors
 
-var userId = 'MdaHUyN5DV2gCB8E3rgB'
+// var userId = 'MdaHUyN5DV2gCB8E3rgB'
 // AsyncStorage.getItem('user').then((value) => {
 //   userId = value
 // })
@@ -29,6 +29,7 @@ export default function UpdateProfile({ navigation }) {
   const [email, setEmail] = useState('')
   const [dob, setDob] = useState()
   const [date, setDate] = useState(new Date())
+  const [userId, setUserId] = useState(null)
 
   const [message, setMessage] = useState()
   const [messageType, setMessageType] = useState()
@@ -55,17 +56,38 @@ export default function UpdateProfile({ navigation }) {
   }
 
   useEffect(() => {
-    loadData()
+    getUser()
   }, [])
-  const loadData = async () => {
-    const q = doc(db, 'user', userId)
-    const docSnap = await getDoc(q)
-    const res = docSnap.data()
-    setFirstName(res.firstName)
-    setLastName(res.lastName)
-    setEmail(res.email)
-    setDob(res.dateOfBirth)
+
+  const getUser = async () => {
+    try {
+      const user = await AsyncStorage.getItem('@user').then(async (value) => {
+        setUserId(value)
+        const q = doc(db, 'user', value)
+        const docSnap = await getDoc(q)
+        const res = docSnap.data()
+        setFirstName(res.firstName)
+        setLastName(res.lastName)
+        setEmail(res.email)
+        setDob(res.dateOfBirth)
+      })
+    } catch (e) {
+      console.log('Fail to get user')
+    }
   }
+
+  // useEffect(() => {
+  //   loadData()
+  // }, [])
+  // const loadData = async () => {
+  //   const q = doc(db, 'user', userId)
+  //   const docSnap = await getDoc(q)
+  //   const res = docSnap.data()
+  //   setFirstName(res.firstName)
+  //   setLastName(res.lastName)
+  //   setEmail(res.email)
+  //   setDob(res.dateOfBirth)
+  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault()

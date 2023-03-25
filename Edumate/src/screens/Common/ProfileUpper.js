@@ -5,8 +5,9 @@ import { InnerContainer } from '../../constants/styles'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { getDoc, doc } from 'firebase/firestore'
 import { db } from '../../../core/config'
+import { getAuth } from '@firebase/auth'
 
-var userId = 'MdaHUyN5DV2gCB8E3rgB'
+// var userId = 'MdaHUyN5DV2gCB8E3rgB'
 // AsyncStorage.getItem('user').then((value) => {
 //   userId = value
 // })
@@ -16,33 +17,59 @@ export default function ProfileUpper() {
   const [role, setRole] = useState('')
   const [stream, setStream] = useState('')
 
+  const [userId, setUserId] = useState(null)
+  const auth = getAuth()
+  const user = auth.currentUser
+  // console.log(user.uid)
+
   useEffect(() => {
-    loadData()
+    getUser()
   }, [])
-  const loadData = async () => {
-    const q = doc(db, 'user', userId)
-    const docSnap = await getDoc(q)
-    const res = docSnap.data()
-    const name = res.firstName + ' ' + res.lastName
-    setName(name)
-    setRole(res.type)
-    setStream(res.stream)
+
+  const getUser = async () => {
+    try {
+      const user = await AsyncStorage.getItem('@user').then(async (value) => {
+        setUserId(value)
+        const q = doc(db, 'user', value)
+        const docSnap = await getDoc(q)
+        const res = docSnap.data()
+        const name = res.firstName + ' ' + res.lastName
+        setName(name)
+        setRole(res.type)
+        setStream(res.stream)
+      })
+    } catch (e) {
+      console.log('Fail to get user')
+    }
   }
+
+  // useEffect(() => {
+  //   if (userId != '') {
+  //     loadData()
+  //   }
+  // }, [])
+  // const loadData = async () => {
+  //   const q = doc(db, 'user', userId)
+  //   const docSnap = await getDoc(q)
+  //   const res = docSnap.data()
+  //   const name = res.firstName + ' ' + res.lastName
+  //   setName(name)
+  //   setRole(res.type)
+  //   setStream(res.stream)
+  // }
   return (
     <>
       <StatusBar style='dark' />
       <InnerContainer>
         <Text style={{ fontSize: 28, marginBottom: 8 }}>
-          {name != '' ? name : 'John Smith'}
+          {name != '' ? name : ''}
         </Text>
         <Image
           source={require('../../../assets/Teacher.png')}
           style={styles.buttonImageIconStyle}
         />
-        <Text style={styles.label}>{role != '' ? role : 'Student'}</Text>
-        <Text style={styles.label}>
-          {stream != '' ? stream : 'Combined Maths'}
-        </Text>
+        <Text style={styles.label}>{role != '' ? role : ''}</Text>
+        <Text style={styles.label}>{stream != '' ? stream : ''}</Text>
       </InnerContainer>
     </>
   )

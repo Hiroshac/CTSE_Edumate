@@ -19,9 +19,10 @@ import {
 import { StatusBar } from 'expo-status-bar'
 import { getDoc, doc, deleteDoc } from 'firebase/firestore'
 import { db } from '../../../core/config'
+import { getAuth } from '@firebase/auth'
 const { primary } = colors
 
-var userId = 'MdaHUyN5DV2gCB8E3rgB'
+// var userId = 'MdaHUyN5DV2gCB8E3rgB'
 // AsyncStorage.getItem('user').then((value) => {
 //   userId = value
 // })
@@ -32,11 +33,40 @@ export default function Profile({ navigation }) {
   const [dob, setDob] = useState('')
   const [role, setRole] = useState('')
   const [stream, setStream] = useState('')
-  const [refreshing, setRefreshing] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
+
+  const [userId, setUserId] = useState(null)
+  const auth = getAuth()
+  const user = auth.currentUser
+  // console.log(user.uid)
 
   useEffect(() => {
-    loadData()
+    getUser()
   }, [])
+
+  const getUser = async () => {
+    try {
+      const user = await AsyncStorage.getItem('@user').then(async (value) => {
+        setUserId(value)
+        const q = doc(db, 'user', value)
+        const docSnap = await getDoc(q)
+        const res = docSnap.data()
+        const name = res.firstName + ' ' + res.lastName
+        setName(name)
+        setEmail(res.email)
+        setDob(res.dateOfBirth)
+        setRole(res.type)
+        setStream(res.stream)
+        setRefreshing(false)
+      })
+    } catch (e) {
+      console.log('Fail to get user')
+    }
+  }
+
+  // useEffect(() => {
+  //     loadData()
+  // }, [])
   const loadData = async () => {
     const q = doc(db, 'user', userId)
     const docSnap = await getDoc(q)

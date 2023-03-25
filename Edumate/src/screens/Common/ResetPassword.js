@@ -11,69 +11,82 @@ import {
 } from '../../constants/styles'
 import ProfileUpper from './ProfileUpper'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { getAuth, updatePassword, signOut } from '@firebase/auth'
 const { darkLight, black } = colors
 
-var userId = 'MdaHUyN5DV2gCB8E3rgB'
-// AsyncStorage.getItem('user').then((value) => {
-//   userId = value
-// })
+// var userId = 'MdaHUyN5DV2gCB8E3rgB'
+// // AsyncStorage.getItem('user').then((value) => {
+// //   userId = value
+// // })
 
 export default function ResetPassword({ navigation }) {
-  const [oldPwd, setOldPwd] = useState('')
   const [newPwd, setNewPwd] = useState('')
   const [newrPwd, setNewrPwd] = useState('')
 
   const [message, setMessage] = useState()
   const [messageType, setMessageType] = useState()
+  const auth = getAuth()
+  const user = auth.currentUser
 
   const Logout = async () => {
-    await AsyncStorage.setItem('user', '')
-    await AsyncStorage.removeItem('user')
+    await AsyncStorage.setItem('@user', '')
+    await AsyncStorage.removeItem('@user')
     await AsyncStorage.removeItem('file')
     await AsyncStorage.clear()
-    navigation.navigate('Login')
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        navigation.navigate('Login')
+      })
+      .catch((error) => {
+        // An error happened.
+        console.log(error)
+      })
   }
 
   const handleSubmit = async () => {
     handleMessage(null)
     const data = {
-      oldPassword: oldPwd,
       newPassword: newPwd,
       newrPassword: newrPwd,
     }
-    if (
-      data.oldPassword == '' ||
-      data.newPassword == '' ||
-      data.newrPassword == ''
-    ) {
+    if (data.newPassword == '' || data.newrPassword == '') {
       handleMessage('Please fill all the fields', 'FAILED')
     } else {
-      if (newPwd != newrPwd) {
-        handleMessage('Password Mismatch!!!', 'FAILED')
-      } else {
-        const q = doc(db, 'user', userId)
-        const docSnap = await getDoc(q)
-        const res = docSnap.data()
-        if (res.data.password == data.oldPassword) {
-          const userDocRef = doc(db, 'user', userId)
-          await updateDoc(userDocRef, {
-            password: data.newPassword,
-          })
-            .then((res) => {
-              alert('Password Updated Successfully')
-              Logout()
-            })
-            .catch((err) => {
-              console.log(err)
-              setTimeout(() => {
-                handleMessage('Something is Wrong !!!', 'FAILED')
-              }, 3000)
-              handleMessage('')
-            })
-        } else {
-          handleMessage('Incorrect existing password', 'FAILED')
-        }
-      }
+      // if (newPwd != newrPwd) {
+      //   handleMessage('Password Mismatch!!!', 'FAILED')
+      // } else {
+      //   const q = doc(db, 'user', userId)
+      //   const docSnap = await getDoc(q)
+      //   const res = docSnap.data()
+      //   if (res.data.password == data.oldPassword) {
+      //     const userDocRef = doc(db, 'user', userId)
+      //     await updateDoc(userDocRef, {
+      //       password: data.newPassword,
+      //     })
+      //       .then((res) => {
+      //         alert('Password Updated Successfully')
+      //         Logout()
+      //       })
+      //       .catch((err) => {
+      //         console.log(err)
+      //         setTimeout(() => {
+      //           handleMessage('Something is Wrong !!!', 'FAILED')
+      //         }, 3000)
+      //         handleMessage('')
+      //       })
+      //   } else {
+      //     handleMessage('Incorrect existing password', 'FAILED')
+      //   }
+      // }
+      updatePassword(user, newrPwd)
+        .then(() => {
+          alert('Updated Successfully')
+          Logout()
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     }
   }
 
@@ -89,7 +102,7 @@ export default function ResetPassword({ navigation }) {
         <View>
           <Text style={styles.header}>Update Password</Text>
           <View style={styles.formView}>
-            <View style={styles.spacing}>
+            {/* <View style={styles.spacing}>
               <StyledInputLabel>Old Password</StyledInputLabel>
               <StyledTextInputField
                 secureTextEntry={true}
@@ -98,7 +111,7 @@ export default function ResetPassword({ navigation }) {
                 onChangeText={(oldPwd) => setOldPwd(oldPwd)}
                 value={oldPwd}
               />
-            </View>
+            </View> */}
             <View style={styles.spacing}>
               <StyledInputLabel>New Password</StyledInputLabel>
               <StyledTextInputField
