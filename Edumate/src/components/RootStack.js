@@ -13,7 +13,6 @@ import { UploadLink } from '../screens/Teacher/UploadLink'
 import { UploadNote } from '../screens/Teacher/UploadNote'
 import { UpdateLink } from '../screens/Teacher/UpdateLink'
 import { UpdateNote } from '../screens/Teacher/UpdateNote'
-import { Comment } from '../screens/Teacher/Comments'
 import UserStack from './UserStack'
 import { TeacherStack } from './TeacherStack'
 import { AdminStack } from './AdminStack'
@@ -37,7 +36,7 @@ export const RootStack = () => {
             headerBackTitleVisible: false,
           }}
         >
-          <Stack.Screen
+          {/* <Stack.Screen
             name='LoadingPage'
             component={FirstSrn}
             // options={{ navigationBarHidden: true }}
@@ -48,8 +47,8 @@ export const RootStack = () => {
             options={{
               headerShown: false,
             }}
-          />
-          <Stack.Screen
+          /> */}
+          {/* <Stack.Screen
             name='SingUp'
             component={SignUp}
             options={{
@@ -62,7 +61,7 @@ export const RootStack = () => {
             options={{
               headerShown: false,
             }}
-          />
+          /> */}
           <Stack.Screen
             name='Teacher'
             component={TeacherStack}
@@ -70,20 +69,20 @@ export const RootStack = () => {
               headerShown: false,
             }}
           />
-           <Stack.Screen
+           {/* <Stack.Screen
             name='Admin'
             component={AdminStack}
             options={{
               headerShown: false,
             }}
-            />
-            <Stack.Screen
+            /> */}
+            {/* <Stack.Screen
             name='StudentStack'
             component={StudentStack}
             options={{
               headerShown: false,
             }}
-          />
+          /> */}
           {/* <Stack.Screen
             name='UploadLink'
             component={UploadLink}

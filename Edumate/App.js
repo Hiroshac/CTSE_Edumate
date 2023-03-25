@@ -21,7 +21,7 @@ export default function App() {
     // <StudentFeedback/>
     // <StudentComment/>
     // <StudentExamTimeTable/>
-    <TeacherDash />
+    <RootStack />
     // <StduentAnswerSheetUpload/>
     // <Upload/>
   )

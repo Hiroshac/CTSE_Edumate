@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { View, Button } from 'react-native'
-import axios from 'axios'
 import {
   StyledContainer,
   InnerContainer,
@@ -16,12 +15,21 @@ import { StatusBar } from 'expo-status-bar'
 import { Octicons } from '@expo/vector-icons'
 import { Picker } from '@react-native-picker/picker'
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker'
-import { collection, addDoc, Timestamp } from 'firebase/firestore'
+import {
+  collection,
+  addDoc,
+  Timestamp,
+  query,
+  orderBy,
+  onSnapshot,
+  deleteDoc,
+  doc,
+} from 'firebase/firestore'
 import { db } from '../../../core/config.js'
 
 const { brand, darkLight, primary } = colors
 
-export const UploadLink = ({navigation}) => {
+export const UploadLink = ({ navigation }) => {
   const [subject, setSubject] = useState([])
   const [selectedSubject, setSelectedSubject] = useState('')
   const [lesson_name, setLesson] = useState('')
@@ -57,25 +65,27 @@ export const UploadLink = ({navigation}) => {
     showMode('time')
   }
 
-  const data = {
-    subject: selectedSubject,
-    lesson_name,
-    grade,
-    date: linkDate,
-    time: linkTime,
-    link,
-    teacher_id: '515',
-  }
+  // const data = {
+  //   subject: selectedSubject,
+  //   lesson_name,
+  //   grade,
+  //   date: linkDate,
+  //   time: linkTime,
+  //   link,
+  //   teacher_id: '515',
+  // }
 
   const userStream = 'Science'
   const loadSubject = () => {
-    axios
-      .post('https://edumate-backend.herokuapp.com/subject/stream', {
-        streamname: userStream,
-      })
-      .then((res) => {
-        setSubject(res.data)
-      })
+    const q = query(collection(db, 'stream'))
+    onSnapshot(q, (querySnapshot) => {
+      setSubject(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
+    })
   }
 
   useEffect(() => {
@@ -86,13 +96,8 @@ export const UploadLink = ({navigation}) => {
     if (lesson_name == '' || grade == '' || link == '') {
       alert('Please fill the given fields')
     } else {
-      // const url = `https://edumate-backend.herokuapp.com/link/add`
-      // axios.post(url, data).then((res) => {
-      //   alert('Link added')
-      //   navigation.navigate('TeacherDash')
-      // })
       addDoc(collection(db, 'links'), {
-        subject: "test",
+        subject: 'test',
         lesson_name,
         grade,
         date: linkDate,
@@ -102,7 +107,7 @@ export const UploadLink = ({navigation}) => {
         created: Timestamp.now(),
       })
       alert('Link added')
-      // navigation.navigate('TeacherDash')
+      navigation.navigate('TeacherDash')
     }
   }
 
@@ -122,8 +127,8 @@ export const UploadLink = ({navigation}) => {
               {subject.map((sub) => {
                 return (
                   <Picker.Item
-                    label={sub.subjectname}
-                    value={sub.subjectname}
+                    label={sub.data.streamname}
+                    value={sub.data.streamname}
                   />
                 )
               })}
@@ -138,6 +143,7 @@ export const UploadLink = ({navigation}) => {
               selectedValue={grade}
               onValueChange={(itemValue, itemIndex) => setGrade(itemValue)}
             >
+              <Picker.Item label='Select the Grade' />
               <Picker.Item label='12 Grade' value={12} />
               <Picker.Item label='13 Grade' value={13} />
             </Picker>
