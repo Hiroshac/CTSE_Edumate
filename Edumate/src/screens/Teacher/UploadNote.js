@@ -23,6 +23,8 @@ import { UploadFile } from '../../../core/fileUpload'
 import { LogBox } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
 import { Picker } from '@react-native-picker/picker'
+import { collection, addDoc, Timestamp } from 'firebase/firestore'
+import { db } from '../../../core/config.js'
 
 LogBox.ignoreLogs(['Setting a timer'])
 
@@ -114,24 +116,26 @@ export const UploadNote = ({ navigation }) => {
   //     50
   //   )
   // }
-
+     
   const onChangeHandler = async () => {
-    if (subject == '' || lesson_name == '' || grade == '' || note == '') {
+    if ( lesson_name == '' || grade == '' || note == '') {
       alert('Please fill the given fields')
     } else {
       uploadFile()
-      const data = {
-        subject: selectedSubject,
+      // const url = `https://edumate-backend.herokuapp.com/teacherNote/add`
+      // await axios.post(url, data).then((res) => {
+      //   alert('Note added')
+      //   navigation.navigate('TeacherDash')
+      // })
+       addDoc(collection(db, 'notes'), {
+        subject: "selectedSubject",
         lesson_name,
         grade,
         note: file,
-        teacher_id: userId,
-      }
-      const url = `https://edumate-backend.herokuapp.com/teacherNote/add`
-      await axios.post(url, data).then((res) => {
-        alert('Note added')
-        navigation.navigate('TeacherDash')
-      })
+        teacher_id: "userId",
+        created: Timestamp.now(),
+       })
+       alert('Note added')
     }
   }
 
