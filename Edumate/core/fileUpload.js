@@ -15,7 +15,7 @@ export const UploadFile = (blobFile, fileName, isUploadCompleted) => {
     () => {
       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
         console.log('File available at', downloadURL)
-         AsyncStorage.setItem('file', sotrageRef)
+         AsyncStorage.setItem('file', downloadURL)
         isUploadCompleted(true)
         return downloadURL
       })

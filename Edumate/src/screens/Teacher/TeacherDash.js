@@ -66,7 +66,8 @@ import {
   doc
 } from 'firebase/firestore'
 import { db } from '../../../core/config'
-const { brand, darkLight, primary } = colors;
+import { getAuth, signOut } from 'firebase/auth'
+const { brand, darkLight, primary } = colors
 
 // const API_URL =
 //   Platform.OS === "ios" ? "http://localhost:5000" : "http://10.0.2.2:5000";
@@ -80,6 +81,27 @@ export const TeacherDash = ({ navigation }) => {
   const [link, setlink] = useState([])
   const [note, setNote] = useState([])
   const [refreshing, setRefreshing] = useState(true)
+  const auth = getAuth()
+  const [userId, setUserId] = useState(null)
+
+  const user = auth.currentUser
+  // console.log(user.uid)
+
+  useEffect(() => {
+    getUser
+  }, [])
+
+  const getUser = async () => {
+    try {
+      const user = await AsyncStorage.getItem('@user').then((value) => {
+        console.log(value)
+        setUserId(value)
+      })
+      console.log(user)
+    } catch (e) {
+      console.log('Fail to get user')
+    }
+  }
 
   const loadNotes = async () => {
     // const url = `https://edumate-backend.herokuapp.com/teacherNote/get/${userId}`;
@@ -93,7 +115,7 @@ export const TeacherDash = ({ navigation }) => {
       setNote(
         querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          data: doc.data()
+          data: doc.data(),
         }))
       )
     })
@@ -117,12 +139,12 @@ export const TeacherDash = ({ navigation }) => {
 
   }
   useEffect(() => {
-    loadLinks();
-  }, []);
+    loadLinks()
+  }, [])
 
   useEffect(() => {
-    loadNotes();
-  }, []);
+    loadNotes()
+  }, [])
 
   const deleteNote = (id) => {
     // axios
@@ -157,11 +179,19 @@ export const TeacherDash = ({ navigation }) => {
     }
   }
   const Logout = async () => {
-    await AsyncStorage.setItem('user', '')
-    await AsyncStorage.removeItem('user')
+    await AsyncStorage.setItem('@user', '')
+    await AsyncStorage.removeItem('@user')
     await AsyncStorage.removeItem('file')
     await AsyncStorage.clear()
-    navigation.navigate('Login')
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        navigation.navigate('Login')
+      })
+      .catch((error) => {
+        // An error happened.
+        console.log(error)
+      })
   }
 
   const navigationView = () => (
@@ -169,7 +199,7 @@ export const TeacherDash = ({ navigation }) => {
       <View style={styles.row}>
         <View>
           <Image
-            source={require("../../../assets/Picture1.png")}
+            source={require('../../../assets/Picture1.png')}
             style={styles.drawerImage}
           />
         </View>
@@ -223,20 +253,20 @@ export const TeacherDash = ({ navigation }) => {
     <DrawerLayoutAndroid
       ref={drawer}
       drawerWidth={300}
-      drawerPosition={"right"}
+      drawerPosition={'right'}
       renderNavigationView={navigationView}
     >
       <StyledContainerDash>
-        <StatusBar style="dark" />
+        <StatusBar style='dark' />
         <View>
           <PageTitle>Discover</PageTitle>
           <DrawerIcon>
             <TouchableOpacity
-              title="Open drawer"
+              title='Open drawer'
               onPress={() => drawer.current.openDrawer()}
             >
               <View>
-                <Octicons size={20} color={darkLight} name="three-bars" />
+                <Octicons size={20} color={darkLight} name='three-bars' />
               </View>
             </TouchableOpacity>
           </DrawerIcon>
@@ -246,7 +276,7 @@ export const TeacherDash = ({ navigation }) => {
             <DiscoverTitle>
               <DiscoverText> Notes</DiscoverText>
               <DashButton>
-                <Octicons size={30} color={primary} name="chevron-down" />
+                <Octicons size={30} color={primary} name='chevron-down' />
               </DashButton>
             </DiscoverTitle>
             <ScrollView
@@ -317,7 +347,7 @@ export const TeacherDash = ({ navigation }) => {
             <DiscoverTitle>
               <DiscoverText> Links</DiscoverText>
               <DashButton>
-                <Octicons size={30} color={primary} name="chevron-down" />
+                <Octicons size={30} color={primary} name='chevron-down' />
               </DashButton>
             </DiscoverTitle>
             <ScrollView
@@ -388,8 +418,8 @@ export const TeacherDash = ({ navigation }) => {
         </InnerContainer>
       </StyledContainerDash>
     </DrawerLayoutAndroid>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -398,7 +428,7 @@ const styles = StyleSheet.create({
     paddingTop: 15,
   },
   navigationContainer: {
-    backgroundColor: "#ecf0f1",
+    backgroundColor: '#ecf0f1',
   },
   paragraph: {
     paddingLeft: 10,
@@ -407,7 +437,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
   },
   row: {
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingTop: 20,
   },
   rowInside: {
@@ -416,9 +446,9 @@ const styles = StyleSheet.create({
   drawerImage: {
     height: 45,
     width: 60,
-    resizeMode: "stretch",
+    resizeMode: 'stretch',
   },
   btnLogout: {
-    backgroundColor: "#E14545",
+    backgroundColor: '#E14545',
   },
-});
+})

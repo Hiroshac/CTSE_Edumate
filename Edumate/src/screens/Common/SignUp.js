@@ -21,8 +21,10 @@ import {
   InnerContainer,
   MsgBox,
 } from '../../constants/styles'
-import axios from 'axios'
 import { Picker } from '@react-native-picker/picker'
+import { collection, query, onSnapshot, addDoc } from 'firebase/firestore'
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { db } from '../../../core/config'
 
 const { darkLight, black } = colors
 
@@ -36,13 +38,20 @@ export default function SignUp({ navigation }) {
   const [password, setPassword] = useState('')
   const [rpassword, setrPassword] = useState('')
   const [subject, setSubject] = useState([])
+  const auth = getAuth()
 
   const [message, setMessage] = useState()
   const [messageType, setMessageType] = useState()
 
   const loadSubject = () => {
-    axios.get('https://edumate-backend.herokuapp.com/stream').then((res) => {
-      setSubject(res.data)
+    const q = query(collection(db, 'stream'))
+    onSnapshot(q, (querySnapshot) => {
+      setSubject(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
     })
   }
 
@@ -57,6 +66,7 @@ export default function SignUp({ navigation }) {
       lastName: lastName,
       type: type,
       stream: stream,
+      dateOfBirth: '-',
       email: email,
       password: password,
     }
@@ -73,20 +83,43 @@ export default function SignUp({ navigation }) {
       if (password !== rpassword) {
         handleMessage('Password Mismatch!!!', 'FAILED')
       } else {
-        await axios
-          .post('https://edumate-backend.herokuapp.com/api/auth/register', data)
-          .then((res) => {
-            const result = res.data
-            if (res.data === 'Created') {
-              alert('Successfully Registered')
-              navigation.navigate('Login')
-            } else if (res.data === 'Exists') {
-              handleMessage('The user already exists', 'FAILED')
-            }
+        await createUserWithEmailAndPassword(auth, email, password)
+          .then(async (userCredential) => {
+            const user = userCredential.user
+            await addDoc(collection(db, '@user'), {
+              uid: user.uid,
+              firstName: firstName,
+              lastName: lastName,
+              type: type,
+              stream: stream,
+              dateOfBirth: '-',
+              email: email,
+            })
+              .then((res) => {
+                alert('Successfully Registered')
+                navigation.navigate('Login')
+              })
+              .catch((err) => {
+                handleMessage('An error occured. Please try again!')
+                setTimeout(() => {
+                  handleMessage('')
+                }, 3000)
+              })
           })
-          .catch((err) => {
-            console.log(err)
-            handleMessage('An error occured. Please try again!')
+          .catch((error) => {
+            if (error.code === 'auth/email-already-in-use') {
+              handleMessage('Email address is already in use!')
+              setTimeout(() => {
+                handleMessage('')
+              }, 3000)
+            }
+            if (error.code === 'auth/invalid-email') {
+              handleMessage('Email address is invalid!')
+              setTimeout(() => {
+                handleMessage('')
+              }, 3000)
+            }
+            console.error(error)
           })
       }
     }
@@ -190,11 +223,12 @@ export default function SignUp({ navigation }) {
                     }
                   >
                     <Picker.Item label='Choose...' />
-                    {subject.map((sub) => {
+                    {subject.map((sub, key) => {
                       return (
                         <Picker.Item
-                          label={sub.streamname}
-                          value={sub.streamname}
+                          id={key}
+                          label={sub.data.streamname}
+                          value={sub.data.streamname}
                         />
                       )
                     })}

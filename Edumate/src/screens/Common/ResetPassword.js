@@ -2,7 +2,6 @@ import { Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import {
-  InnerContainer,
   colors,
   StyledTextInputField,
   StyledInputLabel,
@@ -11,14 +10,13 @@ import {
   MsgBox,
 } from '../../constants/styles'
 import ProfileUpper from './ProfileUpper'
-import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 const { darkLight, black } = colors
 
-var userId = ''
-AsyncStorage.getItem('user').then((value) => {
-  userId = value
-})
+var userId = 'MdaHUyN5DV2gCB8E3rgB'
+// AsyncStorage.getItem('user').then((value) => {
+//   userId = value
+// })
 
 export default function ResetPassword({ navigation }) {
   const [oldPwd, setOldPwd] = useState('')
@@ -53,25 +51,28 @@ export default function ResetPassword({ navigation }) {
       if (newPwd != newrPwd) {
         handleMessage('Password Mismatch!!!', 'FAILED')
       } else {
-        await axios
-          .put(
-            `https://edumate-backend.herokuapp.com/api/auth/updatePwd/${userId}`,
-            data
-          )
-          .then((res) => {
-            if (res.data === 'Password Reset') {
+        const q = doc(db, 'user', userId)
+        const docSnap = await getDoc(q)
+        const res = docSnap.data()
+        if (res.data.password == data.oldPassword) {
+          const userDocRef = doc(db, 'user', userId)
+          await updateDoc(userDocRef, {
+            password: data.newPassword,
+          })
+            .then((res) => {
               alert('Password Updated Successfully')
               Logout()
-            } else if (res.data.message === 'Wrong Password') {
-              handleMessage('Incorrect existing password', 'FAILED')
-            } else {
-              handleMessage('Something is Wrong !!!', 'FAILED')
-            }
-          })
-          .catch((err) => {
-            console.log(err)
-            handleMessage('An error occured. Please try again!')
-          })
+            })
+            .catch((err) => {
+              console.log(err)
+              setTimeout(() => {
+                handleMessage('Something is Wrong !!!', 'FAILED')
+              }, 3000)
+              handleMessage('')
+            })
+        } else {
+          handleMessage('Incorrect existing password', 'FAILED')
+        }
       }
     }
   }

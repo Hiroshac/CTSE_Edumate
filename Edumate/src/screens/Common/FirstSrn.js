@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 50,
     fontWeight: '10px',
-    color: primary,
+    // color: primary,
   },
   container: {
     marginTop: 200,
