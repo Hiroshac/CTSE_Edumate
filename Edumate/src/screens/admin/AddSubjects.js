@@ -41,7 +41,7 @@ export const AddSubjects = ({navigation}) => {
       subjectname:subjectname
     }
     );
-
+    alert("Subject Added!")
     navigation.navigate("getsubjects")
 
   }
@@ -98,7 +98,7 @@ export const AddSubjects = ({navigation}) => {
               />
       
         <StyledButton onPress={onChangeHandler}>
-               <ButtonText>Update</ButtonText>
+               <ButtonText>Add</ButtonText>
       </StyledButton>
     </StyledContainer>
     );

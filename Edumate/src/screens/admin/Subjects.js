@@ -71,6 +71,7 @@ export const Subjects = ({ navigation }) => {
    const deleteSubject = async (subjectId) => {
     try {
       await deleteDoc(doc(db, 'subject', subjectId));
+      alert("Subject Deleted!")
     } catch (error) {
       console.error('Error deleting subject: ', error);
     }

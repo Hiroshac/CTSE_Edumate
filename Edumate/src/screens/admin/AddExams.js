@@ -61,6 +61,7 @@ export const AddExams = ({navigation}) => {
         grade:grade
     }
     );
+    alert("Exam Added!")
     navigation.navigate("getexams")
   }
    

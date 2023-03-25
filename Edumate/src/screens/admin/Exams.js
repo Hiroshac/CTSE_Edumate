@@ -73,6 +73,7 @@ export const Exams = (
  const deleteExam = async (id) => {
   try {
     await deleteDoc(doc(db, 'exam', id));
+    alert("Exam Deleted!")
   } catch (error) {
     console.error('Error deleting exam: ', error);
   }

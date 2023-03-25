@@ -36,6 +36,7 @@ export const AddStreams = ({navigation}) => {
     streamname:streamname,
   }
   );
+  alert("Stream Added!")
   navigation.navigate("getstreams")
 }
 
