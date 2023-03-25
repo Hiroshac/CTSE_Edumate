@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import axios from 'axios'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   StyledContainer,
   colors,
@@ -21,6 +21,9 @@ import {
   StyledInputLabel,
   MsgBox,
 } from '../../constants/styles'
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { collection, onSnapshot, query, where } from 'firebase/firestore'
+import { db } from '../../../core/config'
 
 const { darkLight, black } = colors
 
@@ -32,46 +35,123 @@ const { darkLight, black } = colors
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [userDetails, setUserDetails] = useState([])
+  const [uid, setUid] = useState('')
+  const auth = getAuth()
 
   const [message, setMessage] = useState()
   const [messageType, setMessageType] = useState()
 
   const handleSubmit = async (e) => {
-    const credentials = {
-      email: email,
-      password: password,
-    }
-
-    if (credentials.email == '' || credentials.password == '') {
-      alert('Please fill all the details!!!')
+    // const credentials = {
+    //   email: email,
+    //   password: password,
+    // }
+    if (email != '' && password != '') {
+      const user = await signInWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      )
+        .then(async (userCredential) => {
+          const user = userCredential.user
+          setUid(user.uid)
+          await userNavigation(userCredential.user.uid)
+          // await const pm =(() => {
+          //   const answer = query(collection(db, 'user'))
+          //   const qm = query(answer, where('uid', '==', userCredential.user.uid))
+          //   onSnapshot(qm, (querySnapshot) => {
+          //     setUserDetails(
+          //       querySnapshot.docs.map((doc) => ({
+          //         id: doc.id,
+          //         data: doc.data(),
+          //       }))
+          //     )
+          //   })
+          //   userDetails.map((user) => {
+          //     console.log(user.data.type)
+          //     if (user.data.type == 'student' || user.data.type == 'Student') {
+          //       navigation.replace('StudentStack')
+          //     } else if (
+          //       user.data.type == 'teacher' ||
+          //       user.data.type == 'Teacher'
+          //     ) {
+          //       navigation.replace('Teacher')
+          //     } else if (user.data.type == 'Admin' || user.data.type == 'Admin') {
+          //       navigation.replace('Admin')
+          //     } else {
+          //       alert('Please try again!!!')
+          //     }
+          //   })
+          // })
+        })
+        .catch((error) => {
+          if (error.code === 'auth/user-not-found') {
+            handleMessage('User Not Found')
+            setTimeout(() => {
+              handleMessage('')
+            }, 3000)
+          }
+          if (error.code === 'auth/wrong-password') {
+            handleMessage('Wrong Password')
+            setTimeout(() => {
+              handleMessage('')
+            }, 3000)
+          }
+          if (error.code == 'auth/invalid-email') {
+            handleMessage('Invalid Email Address')
+            setTimeout(() => {
+              handleMessage('')
+            }, 3000)
+          }
+          console.log(error)
+        })
     } else {
-      await axios
-        .post(
-          'https://edumate-backend.herokuapp.com/api/auth/login',
-          credentials
-        )
-        .then((res) => {
-          const result = res.data.details
-          AsyncStorage.setItem('user', result._id)
-          console.log(result)
-          if (result.type == 'student' || result.type == 'Student') {
-            navigation.replace('StudentStack')
-          } else if (result.type == 'teacher' || result.type == 'Teacher') {
-            navigation.replace('Teacher')
-          } else if (result.type == 'Admin' || result.type == 'Admin') {
-            navigation.replace('Admin')  
-          } else {
-            alert('Please try again!!!')
-          }
-        })
-        .catch((err) => {
-          const result = err.response.data
-          if (result.message == 'Wrong Password or Username') {
-            alert(result.message)
-          } else if (result.status == 404) {
-            alert(result.message)
-          }
-        })
+      handleMessage('Please Enter the Email and Password')
+      setTimeout(() => {
+        handleMessage('')
+      }, 3000)
+    }
+  }
+
+  useEffect(() => {
+    if (uid != '') {
+      userNavigation(uid)
+    }
+  }, [])
+
+  const userNavigation = async (id) => {
+    const userRef = query(collection(db, 'user'))
+    const qm = query(userRef, where('uid', '==', id))
+    onSnapshot(qm, (querySnapshot) => {
+      setUserDetails(
+        querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
+    })
+    if (userDetails.length > 0) {
+      userDetails.map((user) => {
+        setUser(user.id)
+        if (user.data.type == 'student' || user.data.type == 'Student') {
+          navigation.replace('StudentStack')
+        } else if (user.data.type == 'teacher' || user.data.type == 'Teacher') {
+          navigation.replace('Teacher')
+        } else if (user.data.type == 'Admin' || user.data.type == 'Admin') {
+          navigation.replace('Admin')
+        } else {
+          alert('Please try again!!!')
+        }
+      })
+    }
+  }
+  const setUser = async (id) => {
+    try {
+      await AsyncStorage.setItem('@user', id)
+      console.log('Name stored successfully')
+    } catch (e) {
+      console.log('Failed to store the id')
     }
   }
 

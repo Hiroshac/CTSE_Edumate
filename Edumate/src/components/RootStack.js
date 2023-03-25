@@ -19,10 +19,20 @@ import { TeacherStack } from './TeacherStack'
 import { AdminStack } from './AdminStack'
 import { StudentDash } from '../screens/student/StudentDash'
 import { StudentStack } from './StudentStack'
+import { onAuthStateChanged } from 'firebase/auth'
+import { auth } from '../../core/config'
 
 const Stack = createNativeStackNavigator()
 
 export const RootStack = () => {
+  const [authenticated, setAuthenticated] = React.useState(false)
+  // onAuthStateChanged(auth, (user) => {
+  //   if (user) {
+
+  //   } else {
+
+  //   }
+  // })
   return (
     <>
       <NavigationContainer>
@@ -37,7 +47,7 @@ export const RootStack = () => {
             headerBackTitleVisible: false,
           }}
         >
-          {/* <Stack.Screen
+          <Stack.Screen
             name='LoadingPage'
             component={FirstSrn}
             // options={{ navigationBarHidden: true }}
@@ -55,7 +65,7 @@ export const RootStack = () => {
             options={{
               headerShown: false,
             }}
-          /> */}
+          />
           <Stack.Screen
             name='User'
             component={UserStack}
@@ -63,28 +73,28 @@ export const RootStack = () => {
               headerShown: false,
             }}
           />
-          {/* <Stack.Screen
+          <Stack.Screen
             name='Teacher'
             component={TeacherStack}
             options={{
               headerShown: false,
             }}
           />
-           <Stack.Screen
+          <Stack.Screen
             name='Admin'
             component={AdminStack}
             options={{
               headerShown: false,
             }}
-            />
-            <Stack.Screen
+          />
+          <Stack.Screen
             name='StudentStack'
             component={StudentStack}
             options={{
               headerShown: false,
             }}
-          /> */}
-          {/* <Stack.Screen
+          />
+          <Stack.Screen
             name='UploadLink'
             component={UploadLink}
             options={{
@@ -118,7 +128,7 @@ export const RootStack = () => {
             options={{
               headerShown: false,
             }}
-          /> */}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </>

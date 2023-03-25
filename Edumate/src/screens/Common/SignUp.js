@@ -23,6 +23,7 @@ import {
 } from '../../constants/styles'
 import { Picker } from '@react-native-picker/picker'
 import { collection, query, onSnapshot, addDoc } from 'firebase/firestore'
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 import { db } from '../../../core/config'
 
 const { darkLight, black } = colors
@@ -37,11 +38,10 @@ export default function SignUp({ navigation }) {
   const [password, setPassword] = useState('')
   const [rpassword, setrPassword] = useState('')
   const [subject, setSubject] = useState([])
-  const [user, setUser] = useState([])
+  const auth = getAuth()
 
   const [message, setMessage] = useState()
   const [messageType, setMessageType] = useState()
-  const [userStatus, setStatus] = useState('')
 
   const loadSubject = () => {
     const q = query(collection(db, 'stream'))
@@ -83,40 +83,44 @@ export default function SignUp({ navigation }) {
       if (password !== rpassword) {
         handleMessage('Password Mismatch!!!', 'FAILED')
       } else {
-        const q = query(collection(db, 'user'))
-        onSnapshot(q, (querySnapshot) => {
-          setUser(
-            querySnapshot.docs.map((doc) => ({
-              id: doc.id,
-              data: doc.data(),
-            }))
-          )
-        })
-        user.map((user) => {
-          if (user.data.email == data.email) {
-            setStatus('exist')
-          }
-        })
-        if (userStatus != 'exist') {
-          await addDoc(collection(db, 'user'), {
-            firstName: firstName,
-            lastName: lastName,
-            type: type,
-            stream: stream,
-            dateOfBirth: '-',
-            email: email,
-            password: password,
+        await createUserWithEmailAndPassword(auth, email, password)
+          .then(async (userCredential) => {
+            const user = userCredential.user
+            await addDoc(collection(db, '@user'), {
+              uid: user.uid,
+              firstName: firstName,
+              lastName: lastName,
+              type: type,
+              stream: stream,
+              dateOfBirth: '-',
+              email: email,
+            })
+              .then((res) => {
+                alert('Successfully Registered')
+                navigation.navigate('Login')
+              })
+              .catch((err) => {
+                handleMessage('An error occured. Please try again!')
+                setTimeout(() => {
+                  handleMessage('')
+                }, 3000)
+              })
           })
-            .then((res) => {
-              alert('Successfully Registered')
-              navigation.navigate('Login')
-            })
-            .catch((err) => {
-              handleMessage('An error occured. Please try again!')
-            })
-        } else {
-          handleMessage('The user already exists', 'FAILED')
-        }
+          .catch((error) => {
+            if (error.code === 'auth/email-already-in-use') {
+              handleMessage('Email address is already in use!')
+              setTimeout(() => {
+                handleMessage('')
+              }, 3000)
+            }
+            if (error.code === 'auth/invalid-email') {
+              handleMessage('Email address is invalid!')
+              setTimeout(() => {
+                handleMessage('')
+              }, 3000)
+            }
+            console.error(error)
+          })
       }
     }
   }
@@ -219,10 +223,10 @@ export default function SignUp({ navigation }) {
                     }
                   >
                     <Picker.Item label='Choose...' />
-                    {subject.map((sub) => {
+                    {subject.map((sub, key) => {
                       return (
                         <Picker.Item
-                          id={sub.id}
+                          id={key}
                           label={sub.data.streamname}
                           value={sub.data.streamname}
                         />
