@@ -50,7 +50,7 @@ export default function ResetPassword({ navigation }) {
     } else {
       updatePassword(user, newrPwd)
         .then(() => {
-          alert('Updated Successfully')
+          alert('Updated Successfully. Please Login!')
           Logout()
         })
         .catch((error) => {

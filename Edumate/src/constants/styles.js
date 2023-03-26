@@ -140,7 +140,6 @@ export const StyledTextInput = styled.TextInput`
 `
 
 export const StyledTextInputField = styled.TextInput`
-  // background-color: ${secondary};
   padding-left: 20px;
   padding-right: 20px;
   border-radius: 5px;
@@ -367,51 +366,33 @@ export const StreamCard = styled.View`
 `
 
 export const AdminContent = styled.Text`
-
   font-size: 18px;
-
 `
 
 export const AdminCard = styled.View`
-
-width: 340px;
-height: 200px;
-border-color: ${secondary};
-border: 1px;
-// margin-left: 5px;
-margin-top: 10px;
-margin-bottom: 10px;
-
+  width: 340px;
+  height: 200px;
+  border-color: ${secondary};
+  border: 1px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 `
 
 export const AdminContainer = styled.View`
-
   flex: 1;
-
   padding-top: ${StatusBarHeight + 90}px;
-
   background-color: ${primary};
 `
 
-
 export const SBox = styled.View`
-
   width: 340px;
-
   height: 200px;
-
   border-color: ${secondary};
-
   border: 3px;
-
   margin-left: 10px;
-
   margin-top: 15px;
-
   margin-bottom: 10px;
-
   border-radius: 10px;
-
 `
 
 export const SStyledButton = styled.TouchableOpacity`
@@ -422,8 +403,8 @@ export const SStyledButton = styled.TouchableOpacity`
   margin: 10px;
   height: 55px;
   margin-top: 50px;
-  `
-  
+`
+
 export const Comments = styled.View`
   width: 200px;
   height: 100px;
@@ -442,8 +423,8 @@ export const SAStyledButton = styled.TouchableOpacity`
   border-radius: 5px;
   margin: 5px;
   height: 70px;
-  `
-  export const AdminContentButton = styled.TouchableOpacity`
+`
+export const AdminContentButton = styled.TouchableOpacity`
   margin-left: 150px;
   margin-top: 20px;
   font-size: 12px;
@@ -461,8 +442,7 @@ export const AdminCardColomn = styled.View`
 export const AdminRow = styled.View`
   flex-direction: row;
   flex: 1;
-  // margin-top: 5px;
-  justify-content:center;
+  justify-content: center;
 `
 export const AdminBox = styled.View`
   width: 350px;
@@ -470,7 +450,7 @@ export const AdminBox = styled.View`
   border-color: ${secondary};
   border: 2px;
   margin-bottom: 30px;
-  borderRadius: 10px;
+  borderradius: 10px;
   padding: 20px;
 `
 export const AdminCol = styled.View`
@@ -482,40 +462,20 @@ export const AdminButton = styled.TouchableOpacity`
   background-color: ${primary};
   justify-content: center;
   width: 40px;
-  `
+`
 
-  export const Feedback = styled.View`
+export const Feedback = styled.View`
   width: 350px;
   height: 150px;
   border-color: ${secondary};
   border: 2px;
   margin-bottom: 30px;
-  borderRadius: 10;
-  // align-items: center;
-  // margin-left: 10px;
+  borderradius: 10;
 `
 export const Row = styled.View`
-flex-direction: row;
-flex: 1;
-
-justify-content:center;
-// width: 350px;
-// height: 150px;
-// border-color: ${secondary};
-// border: 1px;
-// margin-bottom: 30px;
-// align-items: center;
-// margin-left: 10px;
-`
-export const Col = styled.View`
-  //  flex:2;
-// width: ;
-// height: 150px;
-// border-color: ${secondary};
-// border: 1px;
-// margin-bottom: 30px;
-// align-items: center;
-// margin-left: 10px;
+  flex-direction: row;
+  flex: 1;
+  justify-content: center;
 `
 
 export const ButtonEx = styled.TouchableOpacity`
@@ -530,19 +490,19 @@ export const ButtonEx = styled.TouchableOpacity`
   width: 100px;
 `
 export const AdminHomebutton = styled.TouchableOpacity`
-    flex-direction: row;
-    border-color: ${brand};
-    border: 2px;
-    justify-content: center;
-    align-items: center;
-    border-radius: 15px;
-    margin-left: 40px;
-    height: 55px;
-    width: 300px;
-    margin-top: 50px;
+  flex-direction: row;
+  border-color: ${brand};
+  border: 2px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 15px;
+  margin-left: 40px;
+  height: 55px;
+  width: 300px;
+  margin-top: 50px;
 `
-  
-  export const ButtonDel = styled.TouchableOpacity`
+
+export const ButtonDel = styled.TouchableOpacity`
   background-color: ${primary};
   justify-content: center;
   border: 2px;
@@ -552,9 +512,9 @@ export const AdminHomebutton = styled.TouchableOpacity`
   margin: 5px;
   height: 40px;
   width: 100px;
-  `
+`
 
-  export const RowButton = styled.TouchableOpacity`
+export const RowButton = styled.TouchableOpacity`
   flex-direction: row;
   // flex: 1;
   // background-color: ${brand};
@@ -567,4 +527,4 @@ export const AdminHomebutton = styled.TouchableOpacity`
   height: 55px;
   width: 300px;
   margin-top: 50px;
-  `
+`

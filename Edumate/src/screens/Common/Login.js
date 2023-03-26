@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   header: {
     marginStart: 15,
     fontSize: 40,
-    fontWeight: '10px',
+    fontWeight: 'black',
     color: black,
   },
   inputFieldView: {

@@ -69,16 +69,6 @@ export const TeacherDash = ({ navigation }) => {
     // } catch (e) {
     //   console.log('Fail to get user')
     // }
-    const userRef = query(collection(db, 'user'))
-    const qm = query(userRef, where('uid', '==', id))
-    onSnapshot(qm, (querySnapshot) => {
-      setUserDetails(
-        querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }))
-      )
-    })
   }
 
   const loadNotes = async () => {

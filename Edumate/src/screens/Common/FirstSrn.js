@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   nameTag: {
     marginTop: 10,
     fontSize: 50,
-    fontWeight: '10px',
+    fontWeight: 'black',
     // color: primary,
   },
   container: {

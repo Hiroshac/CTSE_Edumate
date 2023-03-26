@@ -81,7 +81,7 @@ export default function Profile({ navigation }) {
       .catch((err) => {
         console.log(err)
       })
-    auth.currentUser
+    user
       .delete()
       .then(() => {
         console.log('Successfully deleted user')

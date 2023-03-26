@@ -51,8 +51,6 @@ export const UpdateLink = ({ route, navigation }) => {
   const [link, setLink] = useState('')
   const [teacher_id, setTeacher] = useState('')
   const { id } = route.params
-  console.log(id)
-  // const id = '636cbe0453ef6c69dc31e041'
 
   const validateDate = d
   var linkDate = validateDate.toLocaleDateString('en-GB')
@@ -83,7 +81,6 @@ export const UpdateLink = ({ route, navigation }) => {
     const q = doc(db, 'links', id)
     const docSnap = await getDoc(q)
 
-    // console.log(docSnap.data())
     setSubject(docSnap.data().subject)
     setLesson(docSnap.data().lesson_name)
     setGrade(docSnap.data().grade)
@@ -97,7 +94,6 @@ export const UpdateLink = ({ route, navigation }) => {
     //       doc: doc.data(),
     //     })),
     //   )
-    // console.log(data)
     // })
   }
 
